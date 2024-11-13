@@ -6,7 +6,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ErrorResponse extends \Illuminate\Http\JsonResponse
 {
-    private function __construct(string $message, int $code = 400)
+    final private function __construct(string $message, int $code = 400)
     {
         parent::__construct([
             'message' => $message,

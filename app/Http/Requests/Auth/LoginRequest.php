@@ -1,8 +1,8 @@
 <?php
 
-namespace app\Http\Requests\Auth;
+namespace App\Http\Requests\Auth;
 
-use ErrorResponse;
+use App\Http\Responses\ErrorResponse;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
@@ -96,6 +96,6 @@ class LoginRequest extends \Illuminate\Foundation\Http\FormRequest
      */
     private function throwValidationError(string $error): void
     {
-        throw new ValidationException($this->validator, new ErrorResponse($error));
+        throw new ValidationException($this->validator, ErrorResponse::fromMessage($error));
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use app\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use OpenApi\Attributes as OA;
