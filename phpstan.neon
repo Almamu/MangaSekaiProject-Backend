@@ -1,0 +1,12 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: max
+    paths:
+        - app
+    earlyTerminatingMethodCalls:
+        App\Http\Requests\Auth\LoginRequest:
+            - throwValidationError
+        App\Http\Responses\ErrorResponse:
+            - throwException
