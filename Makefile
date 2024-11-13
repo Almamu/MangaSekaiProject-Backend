@@ -4,6 +4,7 @@ lint: pint phpstan
 
 serve:
 	@composer dump-autoload
+	@php artisan l5-swagger:generate
 	@php artisan serve
 
 composer:

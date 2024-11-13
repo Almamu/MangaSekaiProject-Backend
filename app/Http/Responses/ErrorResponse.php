@@ -16,11 +16,9 @@ class ErrorResponse extends \Illuminate\Http\JsonResponse
     /**
      * Builds a new error response based on the given input
      *
-     * @param string $message
-     * @param int $code
      * @return static
      */
-    static function fromMessage(string $message, int $code = 500): ErrorResponse
+    public static function fromMessage(string $message, int $code = 500): ErrorResponse
     {
         return new static($message, $code);
     }
@@ -28,12 +26,10 @@ class ErrorResponse extends \Illuminate\Http\JsonResponse
     /**
      * Builds a new error response based on the given input
      *
-     * @param string $message
-     * @param int $code
      * @return void
      */
-    static function throwException(string $message, int $code = 500)
+    public static function throwException(string $message, int $code = 500)
     {
         throw new HttpResponseException(static::fromMessage($message, $code));
     }
-};
+}
