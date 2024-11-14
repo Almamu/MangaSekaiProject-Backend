@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Serie;
+use App\Models\Staff;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,5 +20,8 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'username' => 'admin',
         ]);
+
+        Serie::factory(10)->create();
+        Staff::factory(10)->create();
     }
 }

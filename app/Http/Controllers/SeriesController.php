@@ -33,13 +33,13 @@ class SeriesController
      */
     public function list(): \Illuminate\Database\Eloquent\Collection
     {
-        return Serie::all()->makeHidden(['genres', 'chapters']);
+        return Serie::all()->makeHidden(['genres', 'chapters', 'staff']);
     }
 
     #[OA\Get(
         path: '/api/v1/series/{serieId}',
         operationId: 'getSerieById',
-        description: 'Full list of series available',
+        description: 'Full info for the given series',
         security: [
             ['Token' => []],
         ],
@@ -50,10 +50,9 @@ class SeriesController
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'List of series',
+                description: 'Series information',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/SeriesReadDto',
-                    collectionFormat: 'multi'
+                    ref: '#/components/schemas/SeriesReadDto'
                 )
             ),
         ]
