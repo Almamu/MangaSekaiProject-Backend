@@ -16,6 +16,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('', [SeriesController::class, 'list'])->name('series.list');
         Route::get('{serie}', [SeriesController::class, 'get'])->name('series.get');
         Route::get('{serie}/chapters', [SeriesController::class, 'chapters'])->name('series.chapters');
+        Route::get('{serie}/chapters/{chapter}/pages', [SeriesController::class, 'pages'])->name('series.chapter.pages');
     });
 
     Route::middleware(['auth'])->prefix('staff')->group(function () {

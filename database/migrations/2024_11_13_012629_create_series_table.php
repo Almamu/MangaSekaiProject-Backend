@@ -28,6 +28,7 @@ return new class extends Migration
             $table->foreignId('serie_id')->constrained();
             $table->integer('number');
             $table->integer('pages_count');
+            $table->timestamps();
         });
     }
 
