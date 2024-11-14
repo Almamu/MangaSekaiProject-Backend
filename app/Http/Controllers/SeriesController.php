@@ -22,7 +22,7 @@ class SeriesController
                 response: 200,
                 description: 'List of series',
                 content: new OA\JsonContent(
-                    type: Serie::class,
+                    ref: '#/components/schemas/SeriesListReadDto',
                     collectionFormat: 'multi'
                 )
             ),
@@ -33,7 +33,34 @@ class SeriesController
      */
     public function list(): \Illuminate\Database\Eloquent\Collection
     {
-        return Serie::all();
+        return Serie::all()->makeHidden(['genres', 'chapters']);
+    }
+
+    #[OA\Get(
+        path: '/api/v1/series/{serieId}',
+        operationId: 'getSerieById',
+        description: 'Full list of series available',
+        security: [
+            ['Token' => []],
+        ],
+        tags: ['series'],
+        parameters: [
+            new OA\Parameter(name: 'serieId', description: 'Serie ID', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'List of series',
+                content: new OA\JsonContent(
+                    ref: '#/components/schemas/SeriesReadDto',
+                    collectionFormat: 'multi'
+                )
+            ),
+        ]
+    )]
+    public function get(Serie $serie): Serie
+    {
+        return $serie;
     }
 
     public function cover(Serie $serie): \Illuminate\Http\Response

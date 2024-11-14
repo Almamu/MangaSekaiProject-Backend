@@ -23,9 +23,9 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('series_chapters', function (Blueprint $table) {
+        Schema::create('chapters', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('series_id')->constrained();
+            $table->foreignId('serie_id')->constrained();
             $table->integer('number');
             $table->integer('pages_count');
         });

@@ -13,5 +13,6 @@ Route::group(['prefix' => 'v1'], function () {
 
     Route::middleware(['auth'])->prefix('series')->group(function () {
         Route::get('', [SeriesController::class, 'list'])->name('series.list');
+        Route::get('{serie}', [SeriesController::class, 'get'])->name('series.get');
     });
 });

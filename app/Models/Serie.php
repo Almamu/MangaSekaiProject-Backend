@@ -6,7 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use OpenApi\Attributes as OA;
 
-#[OA\Schema(properties: [
+#[OA\Schema(schema: 'SeriesReadDto', properties: [
+    new OA\Property(property: 'id', type: 'integer'),
+    new OA\Property(property: 'name', type: 'string'),
+    new OA\Property(property: 'chapter_count', type: 'integer'),
+    new OA\Property(property: 'pages_count', type: 'integer'),
+    new OA\Property(property: 'description', type: 'string'),
+    new OA\Property(property: 'synced', type: 'boolean'),
+    new OA\Property(property: 'image_url', type: 'string'),
+    new OA\Property(property: 'genres', type: Genre::class, collectionFormat: 'multi'),
+    new OA\Property(property: 'chapters', type: Chapter::class, collectionFormat: 'multi'),
+    new OA\Property(property: 'created_at', type: 'string'),
+    new OA\Property(property: 'updated_at', type: 'string'),
+])]
+#[OA\Schema(schema: 'SeriesListReadDto', properties: [
     new OA\Property(property: 'id', type: 'integer'),
     new OA\Property(property: 'name', type: 'string'),
     new OA\Property(property: 'chapter_count', type: 'integer'),
@@ -21,7 +34,7 @@ class Serie extends Model
 {
     protected $hidden = ['image', 'mime_type'];
 
-    protected $appends = ['image_url', 'genres'];
+    protected $appends = ['image_url', 'genres', 'chapters'];
 
     public function getImageUrlAttribute(): ?string
     {
@@ -41,11 +54,27 @@ class Serie extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, Chapter>
+     */
+    public function getChaptersAttribute(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->chapters()->get();
+    }
+
+    /**
      * @return BelongsToMany<Genre, $this>
      */
     public function genres(): BelongsToMany
     {
         return $this->belongsToMany(Genre::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Chapter, $this>
+     */
+    public function chapters(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Chapter::class);
     }
 
     public function hasImage(): bool
