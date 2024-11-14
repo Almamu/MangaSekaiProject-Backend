@@ -8,6 +8,6 @@ Route::middleware(['auth'])->prefix('images')->group(function () {
         Route::get('cover/{serie}', [SeriesController::class, 'cover'])->name('images.series.cover');
     });
     Route::group(['prefix' => 'staff'], function () {
-        Route::get('avatar/{staff}', [StaffController::class, 'cover'])->name('images.staff.avatar');
+        Route::get('avatar/{staff}', [StaffController::class, 'avatar'])->name('images.staff.avatar');
     });
 });

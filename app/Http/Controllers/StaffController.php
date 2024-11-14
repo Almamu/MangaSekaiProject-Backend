@@ -61,4 +61,13 @@ class StaffController
     {
         return $staff;
     }
+
+    public function avatar(Staff $serie): \Illuminate\Http\Response
+    {
+        if (! $serie->hasImage()) {
+            return response(status: 404);
+        }
+
+        return response($serie->image, 200, ['Content-Type' => $serie->mime_type]);
+    }
 }
