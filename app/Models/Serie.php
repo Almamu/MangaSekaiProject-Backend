@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(properties: [
@@ -20,7 +21,7 @@ class Serie extends Model
 {
     protected $hidden = ['image', 'mime_type'];
 
-    protected $appends = ['image_url'];
+    protected $appends = ['image_url', 'genres'];
 
     public function getImageUrlAttribute(): ?string
     {
@@ -29,6 +30,22 @@ class Serie extends Model
         }
 
         return route('images.series.cover', ['serie' => $this->id]);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, Genre>
+     */
+    public function getGenresAttribute(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->genres()->get();
+    }
+
+    /**
+     * @return BelongsToMany<Genre, $this>
+     */
+    public function genres(): BelongsToMany
+    {
+        return $this->belongsToMany(Genre::class);
     }
 
     public function hasImage(): bool

@@ -17,8 +17,8 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('series_genres', function (Blueprint $table) {
-            $table->foreignId('series_id')->constrained();
+        Schema::create('genre_serie', function (Blueprint $table) {
+            $table->foreignId('serie_id')->constrained();
             $table->foreignId('genre_id')->constrained();
         });
     }
