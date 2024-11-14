@@ -4,7 +4,6 @@ lint: pint phpstan
 
 serve:
 	@composer dump-autoload
-	@php artisan l5-swagger:generate
 	@php artisan serve
 
 composer:
@@ -27,3 +26,8 @@ cache:
 db_fresh:
 	@php artisan migrate:fresh
 	@php artisan db:seed
+
+ide_helper:
+	@php artisan ide-helper:generate
+	@php artisan ide-helper:models
+	@php artisan ide-helper:meta

@@ -12,6 +12,7 @@
         "tymon/jwt-auth": "^2.1"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.2",
         "fakerphp/faker": "^1.23",
         "friendsofphp/php-cs-fixer": "^3.64",
         "larastan/larastan": "^2.9",
@@ -37,7 +38,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan l5-swagger:generate"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
@@ -51,7 +53,8 @@
             "@php artisan migrate --graceful --ansi"
         ],
         "post-install-cmd": [
-            "git config core.hooksPath ./git-hooks"
+            "git config core.hooksPath ./git-hooks",
+            "@make ide_helper"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",

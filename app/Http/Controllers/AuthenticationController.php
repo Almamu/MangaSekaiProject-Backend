@@ -13,9 +13,6 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'token_type', type: 'string'),
     new OA\Property(property: 'expires_in', type: 'integer'),
 ])]
-#[OA\Components(securitySchemes: [
-    new OA\SecurityScheme(securityScheme: 'Token', type: 'http', bearerFormat: 'JWT', scheme: 'bearer')]
-)]
 #[OA\Tag(name: 'auth', description: 'Authentication')]
 class AuthenticationController
 {

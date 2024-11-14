@@ -20,3 +20,7 @@ yarn-error.log
 /.idea
 /.vscode
 /.zed
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+storage/api-docs/api-docs.json

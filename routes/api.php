@@ -1,15 +1,17 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\SeriesController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'v1'], function ($router) {
-    $router->group(['prefix' => 'auth'], function ($router) {
-        $router->middleware('auth')->group(function () use ($router) {
-            $router->post('logout', [AuthenticationController::class, 'logout']);
-            $router->post('refresh', [AuthenticationController::class, 'refresh']);
-        });
+Route::group(['prefix' => 'v1'], function () {
+    Route::middleware(['auth'])->prefix('auth')->group(function () {
+        Route::post('logout', [AuthenticationController::class, 'logout'])->name('auth.logout');
+        Route::post('refresh', [AuthenticationController::class, 'refresh'])->name('auth.refresh');
+        Route::post('login', [AuthenticationController::class, 'login'])->withoutMiddleware('auth')->name('auth.login');
+    });
 
-        $router->post('login', [AuthenticationController::class, 'login']);
+    Route::middleware(['auth'])->prefix('series')->group(function () {
+        Route::get('', [SeriesController::class, 'list'])->name('series.list');
     });
 });
