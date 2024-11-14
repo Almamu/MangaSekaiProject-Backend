@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Http\OpenApi\PaginationSchema;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use OpenApi\Attributes as OA;
 
-#[OA\Schema(schema: 'SeriesReadDto', properties: [
+#[OA\Schema(schema: 'Series', properties: [
     new OA\Property(property: 'id', type: 'integer'),
     new OA\Property(property: 'name', type: 'string'),
     new OA\Property(property: 'chapter_count', type: 'integer'),
@@ -15,13 +16,12 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'description', type: 'string'),
     new OA\Property(property: 'synced', type: 'boolean'),
     new OA\Property(property: 'image_url', type: 'string'),
-    new OA\Property(property: 'genres', type: Genre::class, collectionFormat: 'multi'),
-    new OA\Property(property: 'chapters', type: Chapter::class, collectionFormat: 'multi'),
-    new OA\Property(property: 'staff', type: Staff::class, collectionFormat: 'multi'),
+    new OA\Property(property: 'genres', type: 'array', items: new OA\Items(type: Genre::class)),
+    new OA\Property(property: 'staff', type: 'array', items: new OA\Items(type: Staff::class)),
     new OA\Property(property: 'created_at', type: 'string'),
     new OA\Property(property: 'updated_at', type: 'string'),
 ])]
-#[OA\Schema(schema: 'SeriesListReadDto', properties: [
+#[OA\Schema(schema: 'SeriesListItem', properties: [
     new OA\Property(property: 'id', type: 'integer'),
     new OA\Property(property: 'name', type: 'string'),
     new OA\Property(property: 'chapter_count', type: 'integer'),
@@ -32,6 +32,7 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'created_at', type: 'string'),
     new OA\Property(property: 'updated_at', type: 'string'),
 ])]
+#[PaginationSchema(schema: 'SeriesListPaginated', ref: '#/components/schemas/SeriesListItem')]
 class Serie extends Model
 {
     /** @use HasFactory<\Database\Factories\SerieFactory> */
@@ -39,7 +40,7 @@ class Serie extends Model
 
     protected $hidden = ['image', 'mime_type'];
 
-    protected $appends = ['image_url', 'genres', 'chapters', 'staff'];
+    protected $appends = ['image_url'];
 
     public function getImageUrlAttribute(): ?string
     {

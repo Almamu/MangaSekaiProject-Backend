@@ -3,7 +3,11 @@
 namespace App\Http\Responses;
 
 use Illuminate\Http\Exceptions\HttpResponseException;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(schema: 'ErrorResponse', properties: [
+    new OA\Property(property: 'message', description: 'Translation independent error message', type: 'string'),
+])]
 class ErrorResponse extends \Illuminate\Http\JsonResponse
 {
     final private function __construct(string $message, int $code = 400)

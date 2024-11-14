@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http;
+namespace App\Http\OpenApi;
 
 use OpenApi\Attributes as OA;
 
@@ -8,4 +8,7 @@ use OpenApi\Attributes as OA;
 #[OA\Components(securitySchemes: [
     new OA\SecurityScheme(securityScheme: 'Token', type: 'http', bearerFormat: 'JWT', scheme: 'bearer')]
 )]
-class OpenApiSpec {}
+class OpenApiSpec
+{
+    const RECORDS_PER_PAGE = 20;
+}

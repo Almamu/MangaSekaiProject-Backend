@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\PaginatedResponseTrait;
 use App\Models\Staff;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(name: 'staff', description: 'Staff members')]
 class StaffController
 {
-    // @phpstan-ignore-next-line
+    use PaginatedResponseTrait;
+
     #[OA\Get(
         path: '/api/v1/staff',
         operationId: 'listStaff',
@@ -17,23 +19,25 @@ class StaffController
             ['Token' => []],
         ],
         tags: ['staff'],
+        parameters: [
+            new OA\Parameter(name: 'page', description: 'Page number', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'perPage', description: 'Number of items per page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+        ],
         responses: [
             new OA\Response(
                 response: 200,
                 description: 'List of staff members',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/StaffListReadDto',
-                    collectionFormat: 'multi'
+                    ref: '#/components/schemas/StaffListPaginated',
                 )
             ),
         ]
     )]
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, Staff>
-     */
-    public function list(): \Illuminate\Database\Eloquent\Collection
+    public function list(): \App\Http\Responses\PaginatedResponse
     {
-        return Staff::all()->makeHidden(['series']);
+        return $this->paginate(
+            Staff::query()
+        );
     }
 
     #[OA\Get(
@@ -52,7 +56,7 @@ class StaffController
                 response: 200,
                 description: 'Staff member information',
                 content: new OA\JsonContent(
-                    ref: '#/components/schemas/StaffReadDto'
+                    ref: '#/components/schemas/Staff'
                 )
             ),
         ]

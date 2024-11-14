@@ -2,21 +2,13 @@
 
 namespace App\Models;
 
+use App\Http\OpenApi\PaginationSchema;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use OpenApi\Attributes as OA;
 
-#[OA\Schema(schema: 'StaffReadDto', properties: [
-    new OA\Property(property: 'id', type: 'integer'),
-    new OA\Property(property: 'name', type: 'string'),
-    new OA\Property(property: 'description', type: 'string'),
-    new OA\Property(property: 'image_url', type: 'string'),
-    new OA\Property(property: 'series', type: 'array', items: new OA\Items(ref: '#/components/schemas/SeriesListReadDto')),
-    new OA\Property(property: 'created_at', type: 'string'),
-    new OA\Property(property: 'updated_at', type: 'string'),
-])]
-#[OA\Schema(schema: 'StaffListReadDto', properties: [
+#[OA\Schema(properties: [
     new OA\Property(property: 'id', type: 'integer'),
     new OA\Property(property: 'name', type: 'string'),
     new OA\Property(property: 'description', type: 'string'),
@@ -24,6 +16,7 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'created_at', type: 'string'),
     new OA\Property(property: 'updated_at', type: 'string'),
 ])]
+#[PaginationSchema(schema: 'StaffListPaginated', type: Staff::class)]
 class Staff extends Model
 {
     /** @use HasFactory<\Database\Factories\StaffFactory> */
@@ -31,7 +24,7 @@ class Staff extends Model
 
     protected $hidden = ['pivot', 'mime_type', 'image'];
 
-    protected $appends = ['image_url', 'series'];
+    protected $appends = ['image_url'];
 
     public function getImageUrlAttribute(): ?string
     {
