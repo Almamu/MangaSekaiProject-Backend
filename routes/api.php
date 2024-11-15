@@ -26,6 +26,7 @@ Route::group(['prefix' => 'v1'], function () {
     });
 
     Route::middleware(['auth'])->prefix('admin')->group(function () {
-        Route::post('media/refresh/queue', [MediaController::class, 'refresh'])->name('media.refresh');
+        Route::post('media/refresh', [MediaController::class, 'refresh'])->name('media.refresh');
+        Route::get('jobs/queue', [MediaController::class, 'queue'])->name('media.queue');
     });
 });

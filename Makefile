@@ -29,5 +29,5 @@ dev_db_fresh:
 
 ide_helper:
 	@php artisan ide-helper:generate
-	@php artisan ide-helper:models
+	@php artisan ide-helper:models --write-mixin
 	@php artisan ide-helper:meta

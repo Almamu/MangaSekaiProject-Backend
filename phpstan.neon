@@ -5,6 +5,8 @@ parameters:
     level: max
     paths:
         - app
+    scanFiles:
+        - _ide_helper_models.php
     earlyTerminatingMethodCalls:
         App\Http\Requests\Auth\LoginRequest:
             - throwValidationError

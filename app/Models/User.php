@@ -11,6 +11,9 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+/**
+ * @mixin IdeHelperUser
+ */
 class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */

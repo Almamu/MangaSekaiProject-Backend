@@ -9,6 +9,9 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'id', type: 'integer'),
     new OA\Property(property: 'name', type: 'string'),
 ])]
+/**
+ * @mixin IdeHelperGenre
+ */
 class Genre extends Model
 {
     protected $hidden = ['pivot', 'created_at', 'updated_at'];

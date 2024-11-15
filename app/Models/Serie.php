@@ -33,6 +33,9 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'updated_at', type: 'string'),
 ])]
 #[PaginationSchema(schema: 'SeriesListPaginated', ref: '#/components/schemas/SeriesListItem')]
+/**
+ * @mixin IdeHelperSerie
+ */
 class Serie extends Model
 {
     /** @use HasFactory<\Database\Factories\SerieFactory> */

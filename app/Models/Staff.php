@@ -25,6 +25,9 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'updated_at', type: 'string'),
 ])]
 #[PaginationSchema(schema: 'StaffListPaginated', type: Staff::class)]
+/**
+ * @mixin IdeHelperStaff
+ */
 class Staff extends Model
 {
     /** @use HasFactory<\Database\Factories\StaffFactory> */

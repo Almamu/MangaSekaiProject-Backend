@@ -64,7 +64,7 @@ class Scanner implements ScannerInterface
 
                 // TODO: IMPROVE THIS, THE LOGIC IS VERY BASIC BUT SHOULD SUFFICE FOR NOW
                 // TODO: THIS IS HOW IT WAS DONE ON THE OLD APP
-                Page::where('chapter_id', '=', $chapterEntry->id)->delete();
+                Page::whereChapterId($chapterEntry->id)->delete();
 
                 $newPages = [];
 
@@ -83,7 +83,7 @@ class Scanner implements ScannerInterface
             // TODO: SAME DEAL AS THE ONE ABOVE, THIS LOGIC IS VERY BASIC BUT SHOULD SUFFICE FOR NOW
             // TODO: THIS IS HOW IT WAS DONE ON THE OLD APP AND SHOULD BE IMPROVED
             // remove chapters no longer present
-            Chapter::where('serie_id', '=', $serieEntry->id)
+            Chapter::whereSerieId($serieEntry->id)
                 ->whereNotIn('number', array_keys($serie->chapters))
                 ->delete();
             // TODO: UPDATE COUNTERS ALL AT THE SAME TIME INSTEAD OF DOING IT HERE AS WE WERE DOING BEFORE

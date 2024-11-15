@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @mixin IdeHelperSettings
+ */
 class Settings extends Model
 {
     public $timestamps = false;
@@ -22,6 +25,6 @@ class Settings extends Model
 
     public static function getScannerDirs(): self
     {
-        return static::where('key', 'scanner_dirs')->firstOrFail();
+        return static::whereKey('scanner_dirs')->firstOrFail();
     }
 }
