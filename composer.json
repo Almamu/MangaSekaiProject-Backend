@@ -9,7 +9,9 @@
         "darkaonline/l5-swagger": "^8.6",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
-        "tymon/jwt-auth": "^2.1"
+        "tymon/jwt-auth": "^2.1",
+        "ext-curl": "*",
+        "ext-zip": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.2",

@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pages', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('chapter_id')->constrained()->cascadeOnDelete();
-            $table->integer('number');
-            $table->string('path');
+        Schema::create('settings', function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->json('value');
         });
     }
 
@@ -24,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pages');
+        Schema::dropIfExists('settings');
     }
 };

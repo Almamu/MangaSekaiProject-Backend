@@ -20,6 +20,7 @@ class SerieFactory extends Factory
             // cannot use fake()->image because it's an external service that works really slow most of the time
             'image' => null,
             'mime_type' => null,
+            'path' => fake()->randomAscii(),
         ];
     }
 }

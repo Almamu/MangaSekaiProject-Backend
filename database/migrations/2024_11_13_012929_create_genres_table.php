@@ -18,7 +18,7 @@ return new class extends Migration
         });
 
         Schema::create('genre_serie', function (Blueprint $table) {
-            $table->foreignId('serie_id')->constrained();
+            $table->foreignId('serie_id')->constrained()->cascadeOnDelete();
             $table->foreignId('genre_id')->constrained();
         });
     }

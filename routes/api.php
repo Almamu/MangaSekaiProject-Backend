@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
@@ -22,5 +23,9 @@ Route::group(['prefix' => 'v1'], function () {
     Route::middleware(['auth'])->prefix('staff')->group(function () {
         Route::get('', [StaffController::class, 'list'])->name('staff.list');
         Route::get('{staff}', [StaffController::class, 'get'])->name('staff.get');
+    });
+
+    Route::middleware(['auth'])->prefix('admin')->group(function () {
+        Route::post('media/refresh/queue', [MediaController::class, 'refresh'])->name('media.refresh');
     });
 });

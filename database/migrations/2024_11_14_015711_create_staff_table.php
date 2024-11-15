@@ -21,8 +21,9 @@ return new class extends Migration
         });
 
         Schema::create('serie_staff', function (Blueprint $table) {
-            $table->foreignId('serie_id')->constrained();
+            $table->foreignId('serie_id')->constrained()->cascadeOnDelete();
             $table->foreignId('staff_id')->constrained();
+            $table->string('role')->nullable();
         });
     }
 

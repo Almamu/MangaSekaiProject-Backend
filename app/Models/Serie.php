@@ -17,7 +17,7 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'synced', type: 'boolean'),
     new OA\Property(property: 'image_url', type: 'string'),
     new OA\Property(property: 'genres', type: 'array', items: new OA\Items(type: Genre::class)),
-    new OA\Property(property: 'staff', type: 'array', items: new OA\Items(type: Staff::class)),
+    new OA\Property(property: 'staff', type: 'array', items: new OA\Items(ref: '#/components/schemas/StaffWithRole')),
     new OA\Property(property: 'created_at', type: 'string'),
     new OA\Property(property: 'updated_at', type: 'string'),
 ])]
@@ -38,9 +38,9 @@ class Serie extends Model
     /** @use HasFactory<\Database\Factories\SerieFactory> */
     use HasFactory;
 
-    protected $hidden = ['image', 'mime_type'];
+    protected $hidden = ['image', 'mime_type', 'genres', 'staff', 'path'];
 
-    protected $appends = ['image_url'];
+    protected $appends = ['image_url', 'genres', 'staff'];
 
     public function getImageUrlAttribute(): ?string
     {
@@ -96,11 +96,22 @@ class Serie extends Model
      */
     public function staff(): BelongsToMany
     {
-        return $this->belongsToMany(Staff::class);
+        return $this->belongsToMany(Staff::class)->withPivot('role');
     }
 
     public function hasImage(): bool
     {
         return is_null($this->image) === false && is_null($this->mime_type) === false;
+    }
+
+    public static function findOrCreate(string $name): self
+    {
+        return self::query()->firstOrCreate(['path' => $name], [
+            'name' => $name,
+            'chapter_count' => 0,
+            'pages_count' => 0,
+            'description' => '',
+            'path' => $name,
+        ]);
     }
 }

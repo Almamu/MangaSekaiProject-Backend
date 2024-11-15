@@ -23,9 +23,9 @@ cache:
 	@php artisan cache:clear
 	@php artisan config:clear
 
-db_fresh:
+dev_db_fresh:
 	@php artisan migrate:fresh
-	@php artisan db:seed
+	@php artisan db:seed --class=DevelopmentSeeder
 
 ide_helper:
 	@php artisan ide-helper:generate

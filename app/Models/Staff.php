@@ -16,6 +16,14 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'created_at', type: 'string'),
     new OA\Property(property: 'updated_at', type: 'string'),
 ])]
+#[OA\Schema(schema: 'StaffWithRole', properties: [
+    new OA\Property(property: 'id', type: 'integer'),
+    new OA\Property(property: 'name', type: 'string'),
+    new OA\Property(property: 'description', type: 'string'),
+    new OA\Property(property: 'image_url', type: 'string'),
+    new OA\Property(property: 'created_at', type: 'string'),
+    new OA\Property(property: 'updated_at', type: 'string'),
+])]
 #[PaginationSchema(schema: 'StaffListPaginated', type: Staff::class)]
 class Staff extends Model
 {

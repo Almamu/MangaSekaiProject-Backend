@@ -28,4 +28,14 @@ class Chapter extends Model
     {
         return $this->hasMany(Page::class);
     }
+
+    public static function updateOrCreate(Serie $serie, string $number, int $pages_count): self
+    {
+        return self::query()->updateOrCreate([
+            'serie_id' => $serie->id,
+            'number' => $number,
+        ], [
+            'pages_count' => $pages_count,
+        ]);
+    }
 }
