@@ -3,11 +3,10 @@
 namespace App\Jobs;
 
 use App\Media\AniList\Matcher;
+use App\Media\Scanner\Scanner;
 use App\Models\Chapter;
 use App\Models\Page;
 use App\Models\Serie;
-use App\Scanner\Scanner;
-use App\ScannerDirs;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
@@ -33,8 +32,6 @@ class ScanMedia implements ShouldQueue
     public function handle(Scanner $scanner): void
     {
         Log::info('Starting up media scanner');
-
-        ScannerDirs::setup();
 
         // TODO: SUPPORT MULTIPLE MATCHERS
 

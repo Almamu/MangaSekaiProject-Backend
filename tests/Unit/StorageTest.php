@@ -2,8 +2,8 @@
 
 namespace Tests\Unit;
 
+use App\Media\Storage\Storage;
 use App\Models\Settings;
-use App\ScannerDirs;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -35,15 +35,15 @@ class StorageTest extends TestCase
             'root' => $vfs->path('storage2'),
         ]);
 
-        ScannerDirs::setup();
+        $storage = $this->app->make(Storage::class);
 
         $firstfile = $firstuuid.'://testfolder/test.txt';
         $secondfile = $seconduuid.'://test2.txt';
 
-        $this->assertNotNull(ScannerDirs::storage($firstfile));
-        $this->assertNotNull(ScannerDirs::storage($secondfile));
+        $this->assertNotNull($storage->storage($firstfile));
+        $this->assertNotNull($storage->storage($secondfile));
 
-        $this->assertEquals('testfolder/test.txt', ScannerDirs::path($firstfile));
-        $this->assertEquals('test2.txt', ScannerDirs::path($secondfile));
+        $this->assertEquals('testfolder/test.txt', Storage::path($firstfile));
+        $this->assertEquals('test2.txt', Storage::path($secondfile));
     }
 }

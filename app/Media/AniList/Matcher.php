@@ -2,9 +2,9 @@
 
 namespace App\Media\AniList;
 
-use App\Media\AuthorMatch;
+use App\Media\Matcher\AuthorMatch;
 
-class Matcher implements \App\Media\Matcher
+class Matcher implements \App\Media\Matcher\Matcher
 {
     const string ANILIST_URL = 'https://graphql.anilist.co';
 
@@ -170,7 +170,7 @@ query (
             $endDate = $series['endDate']['year'].'/'.$series['endDate']['month'].'/'.$series['endDate']['day'];
         }
 
-        $resultList[] = new \App\Media\SeriesMatch(
+        $resultList[] = new \App\Media\Matcher\SeriesMatch(
             $series['id'],
             $series['title']['userPreferred'],
             $series['coverImage']['large'] ?? '',

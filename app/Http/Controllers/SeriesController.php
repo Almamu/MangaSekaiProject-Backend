@@ -5,16 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\OpenApi\OpenApiSpec;
 use App\Http\Responses\PaginatedResponse;
 use App\Http\Responses\PaginatedResponseTrait;
+use App\Media\Storage\Storage;
 use App\Models\Chapter;
 use App\Models\Page;
 use App\Models\Serie;
-use App\ScannerDirs;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(name: 'series', description: 'Series')]
 class SeriesController
 {
     use PaginatedResponseTrait;
+
+    public function __construct(private readonly Storage $storage) {}
 
     #[OA\Get(
         path: '/api/v1/series',
@@ -129,9 +131,10 @@ class SeriesController
 
     public function page(Page $page): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $storage = ScannerDirs::storage($page->path);
-        $path = ScannerDirs::path($page->path);
+        $storage = $this->storage->storage($page->path);
+        $path = $this->storage->path($page->path);
 
+        // TODO: ADD HANDLERS HERE INSTEAD OF WORKING DIRECTLY WITH THE FILES THEMSELVES
         return response()->stream(function () use ($storage, $path) {
             echo $storage->get($path);
         }, 200, [

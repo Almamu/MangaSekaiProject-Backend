@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use App\Scanner\Processors\Processor;
-use App\Scanner\Scanner;
+use App\Media\Scanner\Processors\Processor;
+use App\Media\Scanner\Scanner;
+use App\Media\Storage\Storage;
 use App\Services\ImageHandlerService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Config;
@@ -22,13 +23,23 @@ class AppServiceProvider extends ServiceProvider
 
             return new ImageHandlerService($config);
         });
+        $this->app->singleton(Storage::class, function (Application $app) {
+            /** @var array<class-string> $config */
+            $config = Config::get('media.handlers');
+
+            return new Storage($config);
+        });
         $this->app->singleton(Scanner::class, function (Application $app) {
             /**
              * @var array<class-string<Processor>> $processors
              */
             $processors = Config::get('media.processors');
 
-            return new Scanner($processors, $this->app->make(ImageHandlerService::class));
+            return new Scanner(
+                $processors,
+                $this->app->make(ImageHandlerService::class),
+                $this->app->make(Storage::class)
+            );
         });
     }
 

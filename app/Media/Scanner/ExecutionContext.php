@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Scanner;
+namespace App\Media\Scanner;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 

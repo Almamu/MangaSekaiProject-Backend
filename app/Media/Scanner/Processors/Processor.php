@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Scanner\Processors;
+namespace App\Media\Scanner\Processors;
 
+use App\Media\Scanner\ExecutionContext;
 use App\Models\ChaptersScan;
 use App\Models\PagesScan;
 use App\Models\SeriesScan;
-use App\Scanner\ExecutionContext;
 use App\Services\ImageHandlerService;
 
 interface Processor

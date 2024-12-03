@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Scanner;
+namespace App\Media\Scanner;
 
+use App\Media\Scanner\Processors\Processor;
+use App\Media\Storage\Storage;
 use App\Models\Chapter;
 use App\Models\ChaptersScan;
 use App\Models\PagesScan;
 use App\Models\Serie;
 use App\Models\SeriesScan;
-use App\Scanner\Processors\Processor;
-use App\ScannerDirs;
 use App\Services\ImageHandlerService;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Storage as LaravelStorage;
 
 class Scanner
 {
@@ -23,8 +23,11 @@ class Scanner
     /**
      * @param  array<class-string<Processor>>  $processors
      */
-    public function __construct(private readonly array $processors, ImageHandlerService $imageHandlerService)
-    {
+    public function __construct(
+        private readonly array $processors,
+        ImageHandlerService $imageHandlerService,
+        private readonly Storage $storage
+    ) {
         $this->instances = array_map(fn (string $class) => new $class($imageHandlerService), $this->processors);
     }
 
@@ -39,10 +42,10 @@ class Scanner
      */
     public function scan(callable $serieCallback, callable $chapterCallback, callable $pageCallback): void
     {
-        foreach (ScannerDirs::$dirs as $storage) {
+        foreach ($this->storage->getDisks() as $storage) {
             Log::info('Scanning storage '.$storage.' for new manga');
 
-            $context = new ExecutionContext($storage, Storage::disk($storage), $this);
+            $context = new ExecutionContext($storage, LaravelStorage::disk($storage), $this);
 
             $this->process($context);
         }
@@ -53,7 +56,7 @@ class Scanner
         // go through every series and remove the ones we do not find in processors anymore
         SeriesScan::query()->chunk(100, function ($series) use ($serieCallback) {
             foreach ($series as $serie) {
-                $context = new ExecutionContext($serie->library_id, Storage::disk($serie->library_id), $this);
+                $context = new ExecutionContext($serie->library_id, LaravelStorage::disk($serie->library_id), $this);
 
                 Log::info('Processing '.$serie->library_id.'://'.$serie->basepath);
 
@@ -79,7 +82,7 @@ class Scanner
             ->chunk(100, function ($chapters) use ($chapterCallback) {
                 foreach ($chapters as $chapter) {
                     $library_id = $chapter->serie->library_id;
-                    $context = new ExecutionContext($library_id, Storage::disk($library_id), $this);
+                    $context = new ExecutionContext($library_id, LaravelStorage::disk($library_id), $this);
 
                     Log::info('Processing '.$chapter->basepath.' on library '.$library_id);
 
@@ -100,7 +103,7 @@ class Scanner
         PagesScan::with(['chapter', 'chapter.serie'])->chunk(100, function ($pages) use ($pageCallback) {
             foreach ($pages as $page) {
                 $library_id = $page->chapter->serie->library_id;
-                $context = new ExecutionContext($library_id, Storage::disk($library_id), $this);
+                $context = new ExecutionContext($library_id, LaravelStorage::disk($library_id), $this);
 
                 if ($this->processPage($context, $page)) {
                     $pageCallback($page);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Media;
+namespace App\Media\Matcher;
 
 interface Matcher
 {
