@@ -13,7 +13,14 @@ class Page extends Model
     /** @use HasFactory<\Database\Factories\PageFactory> */
     use HasFactory;
 
-    protected $hidden = ['chapter_id'];
+    protected $appends = ['public_url'];
+
+    protected $hidden = ['chapter_id', 'mime_type'];
 
     public $timestamps = false;
+
+    public function getPublicUrlAttribute(): ?string
+    {
+        return route('images.pages', ['page' => $this->id]);
+    }
 }

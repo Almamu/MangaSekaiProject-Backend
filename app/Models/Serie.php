@@ -41,9 +41,18 @@ class Serie extends Model
     /** @use HasFactory<\Database\Factories\SerieFactory> */
     use HasFactory;
 
-    protected $hidden = ['image', 'mime_type', 'genres', 'staff', 'path'];
+    protected $hidden = ['image', 'mime_type', 'genres', 'staff', 'external_id', 'blocked_fields'];
 
     protected $appends = ['image_url', 'genres', 'staff'];
+
+    protected $fillable = ['name', 'chapter_count', 'pages_count', 'description', 'image', 'mime_type', 'external_id', 'matcher', 'blocked_fields'];
+
+    public function casts(): array
+    {
+        return [
+            'blocked_fields' => 'array',
+        ];
+    }
 
     public function getImageUrlAttribute(): ?string
     {
@@ -105,16 +114,5 @@ class Serie extends Model
     public function hasImage(): bool
     {
         return is_null($this->image) === false && is_null($this->mime_type) === false;
-    }
-
-    public static function findOrCreate(string $name): self
-    {
-        return self::query()->firstOrCreate(['path' => $name], [
-            'name' => $name,
-            'chapter_count' => 0,
-            'pages_count' => 0,
-            'description' => '',
-            'path' => $name,
-        ]);
     }
 }

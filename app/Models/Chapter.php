@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Http\OpenApi\PaginationSchema;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use OpenApi\Attributes as OA;
 
@@ -24,6 +25,8 @@ class Chapter extends Model
 
     protected $hidden = ['serie_id'];
 
+    protected $fillable = ['serie_id', 'number', 'pages_count'];
+
     /**
      * @return HasMany<Page, $this>
      */
@@ -32,10 +35,18 @@ class Chapter extends Model
         return $this->hasMany(Page::class);
     }
 
-    public static function updateOrCreate(Serie $serie, string $number, int $pages_count): self
+    /**
+     * @return BelongsTo<Serie, $this>
+     */
+    public function serie(): BelongsTo
+    {
+        return $this->belongsTo(Serie::class);
+    }
+
+    public static function updateOrCreate(int|Serie $serie, string $number, int $pages_count): self
     {
         return self::query()->updateOrCreate([
-            'serie_id' => $serie->id,
+            'serie_id' => is_int($serie) ? $serie : $serie->id,
             'number' => $number,
         ], [
             'pages_count' => $pages_count,

@@ -12,4 +12,8 @@ use OpenApi\Attributes as OA;
 class OpenApiSpec
 {
     const RECORDS_PER_PAGE = 20;
+
+    const SECURITY = [
+        ['Token' => []],
+    ];
 }

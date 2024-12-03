@@ -34,6 +34,7 @@ class DevelopmentSeeder extends Seeder
         Chapter::all()->each(function (Chapter $chapter) {
             Page::factory($chapter->pages_count)->create([
                 'chapter_id' => $chapter->id,
+                'mime_type' => 'image/jpeg',
             ]);
         });
     }

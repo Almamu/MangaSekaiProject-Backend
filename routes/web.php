@@ -10,4 +10,7 @@ Route::middleware(['auth'])->prefix('images')->group(function () {
     Route::group(['prefix' => 'staff'], function () {
         Route::get('avatar/{staff}', [StaffController::class, 'avatar'])->name('images.staff.avatar');
     });
+    Route::group(['prefix' => 'pages'], function () {
+        Route::get('{page}', [SeriesController::class, 'page'])->name('images.pages');
+    });
 });

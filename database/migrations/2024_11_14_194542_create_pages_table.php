@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('chapter_id')->constrained()->cascadeOnDelete();
             $table->integer('number');
             $table->string('path');
+            $table->string('mime_type');
         });
     }
 

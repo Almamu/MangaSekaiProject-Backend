@@ -6,7 +6,9 @@ use App\Http\OpenApi\OpenApiSpec;
 use App\Http\Responses\PaginatedResponse;
 use App\Http\Responses\PaginatedResponseTrait;
 use App\Models\Chapter;
+use App\Models\Page;
 use App\Models\Serie;
+use App\ScannerDirs;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(name: 'series', description: 'Series')]
@@ -18,9 +20,7 @@ class SeriesController
         path: '/api/v1/series',
         operationId: 'listSeries',
         description: 'Full list of series available',
-        security: [
-            ['Token' => []],
-        ],
+        security: OpenApiSpec::SECURITY,
         tags: ['series'],
         parameters: [
             new OA\Parameter(name: 'page', description: 'Page number', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
@@ -47,9 +47,7 @@ class SeriesController
         path: '/api/v1/series/{serieId}',
         operationId: 'getSerieById',
         description: 'Full info for the given series',
-        security: [
-            ['Token' => []],
-        ],
+        security: OpenApiSpec::SECURITY,
         tags: ['series'],
         parameters: [
             new OA\Parameter(name: 'serieId', description: 'Serie ID', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
@@ -66,16 +64,14 @@ class SeriesController
     )]
     public function get(Serie $serie): Serie
     {
-        return $serie->makeVisible(['genres', 'staff']);
+        return $serie->makeVisible(['genres', 'staff', 'blocked_fields']);
     }
 
     #[OA\Get(
         path: '/api/v1/series/{serieId}/chapters',
         operationId: 'getChaptersForSeries',
         description: 'Paginated list of all the available chapters for the given series',
-        security: [
-            ['Token' => []],
-        ],
+        security: OpenApiSpec::SECURITY,
         tags: ['series'],
         parameters: [
             new OA\Parameter(name: 'serieId', description: 'Serie ID', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
@@ -108,9 +104,7 @@ class SeriesController
         path: '/api/v1/series/{serieId}/chapters/{chapterId}/pages',
         operationId: 'getPagesForChapter',
         description: 'List of pages for the given chapter',
-        security: [
-            ['Token' => []],
-        ],
+        security: OpenApiSpec::SECURITY,
         tags: ['series'],
         parameters: [
             new OA\Parameter(name: 'serieId', description: 'Serie ID', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
@@ -130,7 +124,20 @@ class SeriesController
     public function pages(Serie $serie, Chapter $chapter): \Illuminate\Support\Collection
     {
         // TODO: IS THERE A MORE OPTIMAL WAY OF HANDLING THIS?
-        return $chapter->pages()->orderBy('number')->pluck('path');
+        return $chapter->pages()->orderBy('number')->get()->pluck('public_url');
+    }
+
+    public function page(Page $page): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $storage = ScannerDirs::storage($page->path);
+        $path = ScannerDirs::path($page->path);
+
+        return response()->stream(function () use ($storage, $path) {
+            echo $storage->get($path);
+        }, 200, [
+            'Content-Type' => $page->mime_type,
+            'Content-Length' => $storage->size($path),
+        ]);
     }
 
     public function cover(Serie $serie): \Illuminate\Http\Response

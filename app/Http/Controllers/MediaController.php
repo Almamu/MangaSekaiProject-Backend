@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\OpenApi\OpenApiSpec;
 use App\Jobs\ScanMedia;
 use App\Models\Job;
 use Illuminate\Support\Collection;
@@ -13,9 +14,7 @@ class MediaController
         path: '/api/v1/admin/media/refresh',
         operationId: 'queueRefreshMedia',
         description: 'Queues the media refresh job to be processed in the background.',
-        security: [
-            ['Token' => []],
-        ],
+        security: OpenApiSpec::SECURITY,
         tags: ['admin'],
         responses: [
             new OA\Response(
@@ -36,9 +35,7 @@ class MediaController
         path: '/api/v1/admin/jobs/queue',
         operationId: 'getQueuedJobs',
         description: 'Gets the list of queued jobs that are running or waiting to be processed.',
-        security: [
-            ['Token' => []],
-        ],
+        security: OpenApiSpec::SECURITY,
         tags: ['admin'],
         responses: [
             new OA\Response(

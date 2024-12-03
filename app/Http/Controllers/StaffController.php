@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\OpenApi\OpenApiSpec;
 use App\Http\Responses\PaginatedResponseTrait;
 use App\Models\Staff;
 use OpenApi\Attributes as OA;
@@ -15,9 +16,7 @@ class StaffController
         path: '/api/v1/staff',
         operationId: 'listStaff',
         description: 'Full list of staff available',
-        security: [
-            ['Token' => []],
-        ],
+        security: OpenApiSpec::SECURITY,
         tags: ['staff'],
         parameters: [
             new OA\Parameter(name: 'page', description: 'Page number', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
@@ -44,9 +43,7 @@ class StaffController
         path: '/api/v1/staff/{staffId}',
         operationId: 'getStaffById',
         description: 'Full info for the given staff member',
-        security: [
-            ['Token' => []],
-        ],
+        security: OpenApiSpec::SECURITY,
         tags: ['staff'],
         parameters: [
             new OA\Parameter(name: 'staffId', description: 'Staff ID', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),

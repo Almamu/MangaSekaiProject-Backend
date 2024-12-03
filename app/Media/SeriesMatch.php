@@ -5,6 +5,8 @@ namespace App\Media;
 class SeriesMatch
 {
     public function __construct(
+        /** @var int The external ID of the matcher */
+        public int $external_id,
         /** @var string Visible name for the match */
         public string $name,
         /** @var string URL for the manga's cover */

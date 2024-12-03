@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\OpenApi\OpenApiSpec;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -51,9 +52,7 @@ class AuthenticationController
         operationId: 'logout',
         description: 'Logout from the application',
         summary: 'Performs logout',
-        security: [
-            ['Token' => []],
-        ],
+        security: OpenApiSpec::SECURITY,
         tags: ['auth'],
         responses: [
             new OA\Response(
