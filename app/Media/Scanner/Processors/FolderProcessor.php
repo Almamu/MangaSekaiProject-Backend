@@ -69,6 +69,8 @@ class FolderProcessor implements Processor
             $mimeType = $this->imageHandler->guessMimeType($file);
 
             if (! $this->imageHandler->isMimeTypeSupported($mimeType)) {
+                fclose($stream);
+
                 continue;
             }
 

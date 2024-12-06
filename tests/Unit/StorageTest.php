@@ -26,8 +26,14 @@ class StorageTest extends TestCase
         $vfs = new \VirtualFileSystem\FileSystem;
         $vfs->createDirectory('/storage1/testfolder', true);
         $vfs->createDirectory('/storage2');
-        $vfs->createFile('/storage1/testfolder/test.txt', '');
+        $vfs->createFile('/storage1/testfolder/test.txt', 'test folder for normal handling');
         $vfs->createFile('/storage2/test2.txt', '');
+
+        // create some files for the tests
+        $zip = new \PhpZip\ZipFile;
+        $zip->addFromString('test.txt', 'testing text');
+
+        $vfs->createFile('/storage1/test.zip', $zip->outputAsString());
 
         return $vfs;
     }
@@ -49,7 +55,7 @@ class StorageTest extends TestCase
             'root' => $this->vfs->path('storage2'),
         ]);
 
-        $this->storage = $this->app->make(Storage::class, ['handlers' => []]);
+        $this->storage = $this->app->make(Storage::class);
     }
 
     /**
@@ -62,9 +68,8 @@ class StorageTest extends TestCase
 
         $this->assertNotNull($this->storage->storage($firstfile));
         $this->assertNotNull($this->storage->storage($secondfile));
-
-        $this->assertEquals('testfolder/test.txt', Storage::path($firstfile));
-        $this->assertEquals('test2.txt', Storage::path($secondfile));
+        $this->assertNotNull($this->storage->storage($this->firstuuid));
+        $this->assertNotNull($this->storage->storage($this->seconduuid));
     }
 
     public function test_storage_protocol(): void
@@ -74,10 +79,58 @@ class StorageTest extends TestCase
         $this->storage->storage('google.es');
     }
 
-    public function test_storage_path(): void
+    public function test_storage_path_parsing(): void
+    {
+        $path = Storage::path('protocol://path/to/file');
+
+        $this->assertEquals('protocol', $path->disk);
+        $this->assertEquals('path/to/file', $path->path);
+        $this->assertEquals('', $path->container);
+        $this->assertEquals('protocol://path/to/file', (string) $path);
+
+        $path = Storage::path('protocol://path/to/file.zip:file/contents.jpg');
+
+        $this->assertEquals('protocol', $path->disk);
+        $this->assertEquals('path/to/file.zip', $path->container);
+        $this->assertEquals('file/contents.jpg', $path->path);
+        $this->assertEquals('protocol://path/to/file.zip:file/contents.jpg', (string) $path);
+
+        $path = Storage::path('protocol://path/to/file.zip:file/contents?.jpg');
+
+        $this->assertEquals('protocol', $path->disk);
+        $this->assertEquals('path/to/file.zip', $path->container);
+        $this->assertEquals('file/contents?.jpg', $path->path);
+        $this->assertEquals('protocol://path/to/file.zip:file/contents?.jpg', (string) $path);
+
+        $path = Storage::path('protocol://file.zip:file/contents?.jpg');
+
+        $this->assertEquals('protocol', $path->disk);
+        $this->assertEquals('file.zip', $path->container);
+        $this->assertEquals('file/contents?.jpg', $path->path);
+        $this->assertEquals('protocol://file.zip:file/contents?.jpg', (string) $path);
+
+        $this->expectException(\InvalidArgumentException::class);
+        Storage::path('malformed:path');
+    }
+
+    public function test_storage_path_parsing_extra(): void
     {
         $this->expectException(\InvalidArgumentException::class);
+        Storage::path('malformed://path:multiple:containers');
+    }
 
-        $this->storage->path('protocol://');
+    public function test_handlers(): void
+    {
+        $this->storage->open($this->firstuuid.'://testfolder/test.txt', function ($stream) {
+            $this->assertIsResource($stream);
+
+            $this->assertEquals('test folder for normal handling', stream_get_contents($stream));
+        });
+
+        $this->storage->open($this->firstuuid.'://test.zip:test.txt', function ($stream) {
+            $this->assertIsResource($stream);
+
+            $this->assertEquals('testing text', stream_get_contents($stream));
+        });
     }
 }

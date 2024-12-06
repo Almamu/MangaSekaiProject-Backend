@@ -130,15 +130,15 @@ class SeriesController
 
     public function page(Page $page): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $storage = $this->storage->storage($page->path);
-        $path = $this->storage->path($page->path);
-
-        // TODO: ADD HANDLERS HERE INSTEAD OF WORKING DIRECTLY WITH THE FILES THEMSELVES
-        return response()->stream(function () use ($storage, $path) {
-            echo $storage->get($path);
+        return response()->stream(function () use ($page) {
+            // read the file in blocks of 4096 bytes and output it to the client
+            $this->storage->open($page->path, function ($stream) {
+                echo fread($stream, 4096);
+                ob_flush();
+                flush();
+            });
         }, 200, [
             'Content-Type' => $page->mime_type,
-            'Content-Length' => $storage->size($path),
         ]);
     }
 
