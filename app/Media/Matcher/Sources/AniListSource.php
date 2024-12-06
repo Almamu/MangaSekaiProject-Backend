@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 class AniListSource implements Source
 {
     const string ANILIST_URL = 'https://graphql.anilist.co';
+    const string MATCHER_NAME = 'anilist';
 
     const string MATCH_REQUEST = '
 query (
@@ -127,8 +128,12 @@ query (
                 if (! array_key_exists('role', $staff)) {
                     continue;
                 }
+                if (! array_key_exists('id', $staff) || ! is_integer($staff['id'])) {
+                    continue;
+                }
 
                 $authors[] = new AuthorMatch(
+                    $staff['id'],
                     $staff['role'],
                     $staff['node']['name']['full'],
                     $staff['node']['image']['large'],
@@ -146,6 +151,7 @@ query (
 
         $resultList[] = new \App\Media\Matcher\Data\SeriesMatch(
             $series['id'],
+            self::MATCHER_NAME,
             $series['title']['userPreferred'],
             $series['coverImage']['large'] ?? '',
             $series['description'] ?? '',

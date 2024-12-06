@@ -75,8 +75,8 @@ class ScannerTest extends TestCase
                 $mock->shouldReceive('match')
                     ->with('Bakuman')
                     ->andReturn([new SeriesMatch(
-                        1000, '', 'http://dummy.test', '', [], 1, '', '', [
-                            new AuthorMatch('role', 'name', 'image', 'description'),
+                        1000, 'anilist', '', 'http://dummy.test', '', [], 1, '', '', [
+                            new AuthorMatch(1, 'role', 'name', 'http://dummy.test', 'description'),
                         ]
                     )]);
                 $mock->shouldReceive('match')
@@ -100,6 +100,8 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('series', 1);
         $this->assertDatabaseCount('chapters', 2);
         $this->assertDatabaseCount('pages', 2);
+        $this->assertDatabaseCount('staff', 1);
+        $this->assertDatabaseCount('cover_download_queue', 2);
 
         // setup vfs for the new detection
         $this->vfs->createDirectory('/storage1/Bakuman/Chapter 3', true);
@@ -115,6 +117,8 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('series', 1);
         $this->assertDatabaseCount('chapters', 3);
         $this->assertDatabaseCount('pages', 4);
+        $this->assertDatabaseCount('staff', 1);
+        $this->assertDatabaseCount('cover_download_queue', 2);
 
         // setup vfs for the new detection
         $this->vfs->createDirectory('/storage1/Death Note/Chapter 1', true);
@@ -130,6 +134,8 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('series', 2);
         $this->assertDatabaseCount('chapters', 5);
         $this->assertDatabaseCount('pages', 6);
+        $this->assertDatabaseCount('staff', 1);
+        $this->assertDatabaseCount('cover_download_queue', 2);
 
         Queue::assertPushed(DownloadResources::class, 3);
     }
@@ -154,6 +160,8 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('series', 2);
         $this->assertDatabaseCount('chapters', 5);
         $this->assertDatabaseCount('pages', 6);
+        $this->assertDatabaseCount('staff', 1);
+        $this->assertDatabaseCount('cover_download_queue', 2);
 
         Queue::assertPushed(DownloadResources::class);
     }
@@ -174,6 +182,8 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('series', 1);
         $this->assertDatabaseCount('chapters', 3);
         $this->assertDatabaseCount('pages', 3);
+        $this->assertDatabaseCount('staff', 1);
+        $this->assertDatabaseCount('cover_download_queue', 2);
 
         Queue::assertPushed(DownloadResources::class, 2);
     }
@@ -204,6 +214,8 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('series', 1);
         $this->assertDatabaseCount('chapters', 4);
         $this->assertDatabaseCount('pages', 5);
+        $this->assertDatabaseCount('staff', 1);
+        $this->assertDatabaseCount('cover_download_queue', 2);
 
         Queue::assertPushed(DownloadResources::class);
     }

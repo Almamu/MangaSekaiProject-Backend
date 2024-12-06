@@ -14,7 +14,7 @@ class DummySource implements Source
         if ($search === 'first') {
             return [
                 new SeriesMatch(
-                    0, '', '', '', [], 0, '', '', []
+                    0, 'dummy', '', '', '', [], 0, '', '', []
                 ),
             ];
         }
@@ -30,7 +30,7 @@ class DummySource2 implements Source
         if ($search === 'second') {
             return [
                 new SeriesMatch(
-                    0, '', '', '', [], 0, '', '', []
+                    0, 'dummy2', '', '', '', [], 0, '', '', []
                 ),
             ];
         }

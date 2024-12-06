@@ -125,7 +125,6 @@ class SeriesController
     )]
     public function pages(Serie $serie, Chapter $chapter): \Illuminate\Support\Collection
     {
-        // TODO: IS THERE A MORE OPTIMAL WAY OF HANDLING THIS?
         return $chapter->pages()->orderBy('number')->get()->pluck('public_url');
     }
 

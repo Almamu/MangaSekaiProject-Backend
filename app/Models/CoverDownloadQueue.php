@@ -19,4 +19,12 @@ class CoverDownloadQueue extends Model
     {
         return $this->belongsTo(Serie::class);
     }
+
+    /**
+     * @return BelongsTo<Staff, $this>
+     */
+    public function staff(): BelongsTo
+    {
+        return $this->belongsTo(Staff::class);
+    }
 }

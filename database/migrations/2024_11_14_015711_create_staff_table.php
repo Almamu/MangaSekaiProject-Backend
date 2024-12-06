@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('staff', function (Blueprint $table) {
             $table->id();
+            $table->integer('external_id')->nullable();
+            $table->string('matcher')->nullable();
             $table->string('name');
             $table->binary('image')->nullable();
             $table->string('mime_type')->nullable();

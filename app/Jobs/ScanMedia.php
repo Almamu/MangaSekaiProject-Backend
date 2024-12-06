@@ -11,6 +11,7 @@ use App\Models\Page;
 use App\Models\PagesScan;
 use App\Models\Serie;
 use App\Models\SeriesScan;
+use App\Models\Staff;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
@@ -63,19 +64,53 @@ class ScanMedia implements ShouldQueue
                         $result = $results[0];
 
                         // TODO: RESPECT BLOCK FIELDS
+                        /** @var Serie $newSerie */
                         $newSerie = Serie::updateOrCreate([
                             'external_id' => $result->external_id,
                         ], [
-                            'matcher' => 'anilist',
+                            'matcher' => $result->matcher,
                             'name' => $result->name,
                             'description' => $result->description,
                             'synced' => true,
                         ]);
 
-                        if (trim($result->cover) !== '') {
-                            CoverDownloadQueue::insert([
+                        if (trim($result->cover) !== '' || ! is_null($newSerie->image)) {
+                            CoverDownloadQueue::updateOrInsert([
                                 'serie_id' => $newSerie->id,
+                            ], [
+                                'type' => 'serie',
                                 'url' => $result->cover,
+                            ]);
+                        }
+
+                        // add staff to the database too
+                        foreach ($result->extrainfo as $staff) {
+                            /** @var Staff $newStaff */
+                            $newStaff = Staff::updateOrCreate([
+                                'external_id' => $staff->external_id,
+                            ], [
+                                'matcher' => $result->matcher,
+                                'name' => $staff->name,
+                                'description' => $staff->description,
+                            ]);
+
+                            if (trim($staff->image) === '' || ! is_null($newStaff->image)) {
+                                continue;
+                            }
+
+                            // add the join entry for the staff if it doesn't exist too
+                            $newStaff->series()->newPivotQuery()->updateOrInsert([
+                                'staff_id' => $newStaff->id,
+                                'serie_id' => $newSerie->id,
+                            ], [
+                                'role' => $staff->role,
+                            ]);
+
+                            CoverDownloadQueue::updateOrInsert([
+                                'staff_id' => $newStaff->id,
+                            ], [
+                                'type' => 'staff',
+                                'url' => $staff->image,
                             ]);
                         }
                     } else {

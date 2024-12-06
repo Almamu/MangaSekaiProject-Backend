@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('cover_download_queue', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('serie_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('serie_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('staff_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->enum('type', ['serie', 'staff']);
             $table->string('url');
             $table->timestamps();
         });
