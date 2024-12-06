@@ -35,7 +35,7 @@ class ImageHandlerService
         $filename = basename($filename);
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
 
-        if (! is_string($extension)) {
+        if (! is_string($extension) || trim($extension) === '') {
             return 'application/octet-stream';
         }
 

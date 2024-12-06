@@ -32,7 +32,7 @@ class ScannerTest extends TestCase
         $vfs->createDirectory('/storage2/Bakuman/Chapter 2', true);
 
         $vfs->createFile('storage1/Bakuman/Chapter 1/001.jpg', '');
-        $vfs->createFile('storage2/Bakuman/Chapter 2/001.jpg', '');
+        $vfs->createFile('storage2/Bakuman/Chapter 2/001.5.jpg', '');
         $vfs->createFile('storage1/Bakuman/Chapter 1/002.doc', '');
         $vfs->createFile('storage1/Bakuman/Chapter 1/Invalid Page.jpg', '');
 
@@ -183,7 +183,7 @@ class ScannerTest extends TestCase
         // create a mock zip file and add it to the vfs
         $zip = new \PhpZip\ZipFile;
         $zip->addFromString('Chapter 3/001.jpg', '');
-        $zip->addFromString('Chapter 3/002.jpg', '');
+        $zip->addFromString('Chapter 3/002.5.jpg', '');
         $zip->addFromString('Chapter 3/003.doc', '');
         $zip->addFromString('Chapter 3/Invalid filename.jpg', '');
         $zip->addFromString('Invalid chapter/003.jpg', '');
