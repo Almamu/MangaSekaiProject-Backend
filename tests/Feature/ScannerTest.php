@@ -153,7 +153,7 @@ class ScannerTest extends TestCase
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 3);
-        $this->assertDatabaseCount('chapters_scans', 3);
+        $this->assertDatabaseCount('chapters_scans', 4);
         $this->assertDatabaseCount('series', 1);
         $this->assertDatabaseCount('chapters', 4);
         $this->assertDatabaseCount('pages', 5);
