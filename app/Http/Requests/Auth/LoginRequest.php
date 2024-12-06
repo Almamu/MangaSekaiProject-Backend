@@ -96,6 +96,6 @@ class LoginRequest extends \Illuminate\Foundation\Http\FormRequest
      */
     private function throwValidationError(string $error): void
     {
-        throw new ValidationException($this->validator, ErrorResponse::fromMessage($error));
+        throw new ValidationException($this->validator, ErrorResponse::fromMessage($error, 401));
     }
 }
