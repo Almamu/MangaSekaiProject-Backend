@@ -13,6 +13,7 @@ jobs:
 
     - name: Install composer dependencies and make
       run: |
+        git config --system --add safe.directory '*'
         composer install
         apt install -y make
 
