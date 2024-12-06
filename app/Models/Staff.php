@@ -34,7 +34,9 @@ class Staff extends Model
     use HasFactory;
 
     protected $hidden = ['pivot', 'mime_type', 'image'];
+
     protected $fillable = ['external_id', 'name', 'matcher', 'description', 'image', 'mime_type'];
+
     protected $appends = ['image_url'];
 
     public function getImageUrlAttribute(): ?string

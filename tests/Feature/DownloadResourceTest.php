@@ -23,7 +23,7 @@ class DownloadResourceTest extends TestCase
     {
         Http::fake([
             'https://s4.anilist.co/file/anilistcdn/staff/large/n96888-S7t8RBq40Y70.png' => Http::response('IMAGE CONTENTS HERE', 200, ['Content-Type' => 'image/png']),
-            'https://non-existant-domain.test' => Http::response(status: 404)
+            'https://non-existant-domain.test' => Http::response(status: 404),
         ]);
 
         // add one serie

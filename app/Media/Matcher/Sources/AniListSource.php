@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 class AniListSource implements Source
 {
     const string ANILIST_URL = 'https://graphql.anilist.co';
+
     const string MATCHER_NAME = 'anilist';
 
     const string MATCH_REQUEST = '
@@ -128,7 +129,7 @@ query (
                 if (! array_key_exists('role', $staff)) {
                     continue;
                 }
-                if (! array_key_exists('id', $staff) || ! is_integer($staff['id'])) {
+                if (! array_key_exists('id', $staff) || ! is_int($staff['id'])) {
                     continue;
                 }
 
