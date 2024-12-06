@@ -33,6 +33,7 @@ class ScannerTest extends TestCase
 
         $vfs->createFile('storage1/Bakuman/Chapter 1/001.jpg', '');
         $vfs->createFile('storage2/Bakuman/Chapter 2/001.jpg', '');
+        $vfs->createFile('storage1/Bakuman/Chapter 1/002.doc', '');
         $vfs->createFile('storage1/Bakuman/Chapter 1/Invalid Page.jpg', '');
 
         // add some directory noise so it's not detected by the scanner
@@ -183,10 +184,15 @@ class ScannerTest extends TestCase
         $zip = new \PhpZip\ZipFile;
         $zip->addFromString('Chapter 3/001.jpg', '');
         $zip->addFromString('Chapter 3/002.jpg', '');
+        $zip->addFromString('Chapter 3/003.doc', '');
+        $zip->addFromString('Chapter 3/Invalid filename.jpg', '');
+        $zip->addFromString('Invalid chapter/003.jpg', '');
+        $zip->addFromString('__MACOSX/dummydata', '');
 
         $this->vfs->createFile('/storage1/Bakuman.zip', $zip->outputAsString());
 
         $zip = new \PhpZip\ZipFile;
+        $zip->addFromString('__MACOSX/dummydata', '');
         $zip->addFromString('001.jpg', '');
         $this->vfs->createFile('/storage1/Bakuman/Chapter 4.zip', $zip->outputAsString());
 
