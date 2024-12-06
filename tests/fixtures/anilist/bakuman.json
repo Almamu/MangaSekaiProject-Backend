@@ -1,0 +1,159 @@
+{
+  "data": {
+    "MANGA": {
+      "id": 39711,
+      "title": {
+        "userPreferred": "Bakuman."
+      },
+      "coverImage": {
+        "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx39711-tjPWXT1AW321.jpg",
+        "color": null
+      },
+      "startDate": {
+        "year": 2008,
+        "month": 8,
+        "day": 8
+      },
+      "endDate": {
+        "year": 2012,
+        "month": 4,
+        "day": 23
+      },
+      "season": null,
+      "description": "Average student Moritaka Mashiro enjoys drawing for fun. When his classmate and aspiring writer Akito Takagi discovers his talent, he begs Moritaka to team up with him as a manga-creating duo. But what exactly does it take to make it in the manga-publishing world?\n<br><br>\n(Source: Viz Media)",
+      "type": "MANGA",
+      "format": "MANGA",
+      "status": "FINISHED",
+      "genres": [
+        "Comedy",
+        "Drama",
+        "Romance",
+        "Slice of Life"
+      ],
+      "isAdult": false,
+      "averageScore": 81,
+      "popularity": 37497,
+      "mediaListEntry": null,
+      "nextAiringEpisode": null,
+      "studios": {
+        "edges": []
+      },
+      "staff": {
+        "edges": [
+          {
+            "id": 57018,
+            "role": "Art",
+            "node": {
+              "id": 96888,
+              "name": {
+                "full": "Takeshi Obata"
+              },
+              "image": {
+                "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n96888-S7t8RBq40Y70.png"
+              },
+              "description": "[Twitter](https://twitter.com/obata_ten)\n\nTakeshi Obata is a Japanese manga artist that usually works as the illustrator in collaboration with a writer. He first gained international attention for [Hikaru no Go](https://anilist.co/manga/30020/Hikaru-no-Go/) (1998–2003) with [Yumi Hotta](https://anilist.co/staff/96889/Yumi-Hotta), but is better known for [Death Note](https://anilist.co/manga/30021/Death-Note/) (2003–2006) and [Bakuman](https://anilist.co/manga/39711/Bakuman/) (2008–2012) with [Tsugumi Ohba](https://anilist.co/staff/97111/Tsugumi-Ohba). Obata has mentored several well-known manga artists, including [Nobuhiro Watsuki](https://anilist.co/staff/96890/Nobuhiro-Watsuki) of [Rurouni Kenshin](https://anilist.co/manga/30022/Rurouni-Kenshin-Meiji-Kenkaku-Romantan/) fame, [Black Cat](https://anilist.co/manga/30040/Black-Cat/) creator [Kentaro Yabuki](https://anilist.co/staff/96900/Kentarou-Yabuki), and [Eyeshield 21](https://anilist.co/manga/30043/Eyeshield-21/) artist [Yusuke Murata](https://anilist.co/staff/96903/Yusuke-Murata)."
+            }
+          },
+          {
+            "id": 58539,
+            "role": "Story",
+            "node": {
+              "id": 97111,
+              "name": {
+                "full": "Tsugumi Ooba"
+              },
+              "image": {
+                "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n97111-HDCVp6Q1AaDT.png"
+              },
+              "description": "Tsugumi Ooba is a fictional writer credited with writing the manga Death Note. Their real identity (and gender) is a closely guarded secret\n\nDay and night, develops manga plots while holding knees on a chair (reminiscent of one of the main characters in Death Note, L.)\n\nThey like to collect teacups.\n\n(Source: VIZ Media)"
+            }
+          },
+          {
+            "id": 300125,
+            "role": "Translator (French)",
+            "node": {
+              "id": 216220,
+              "name": {
+                "full": "Thibaud Desbief"
+              },
+              "image": {
+                "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n216220-OOqgptgeY2IE.jpg"
+              },
+              "description": "He is a French translator, living in Japan since 10 years. He translated many well-known manga of the authors Inio Asano and Naoki Urasawa, and received the Konishi prize in 2019 for his translation of Dead Demon Dededede Destruction. "
+            }
+          },
+          {
+            "id": 309187,
+            "role": "Translator (Portuguese)",
+            "node": {
+              "id": 220668,
+              "name": {
+                "full": "Edward Kondo"
+              },
+              "image": {
+                "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n220668-gsuLpOxyxom2.png"
+              },
+              "description": "[Twitter](https://twitter.com/edkondo) | [Instagram](https://www.instagram.com/edkondo/)"
+            }
+          },
+          {
+            "id": 572484,
+            "role": "Translator (Polish: vols 1-4)",
+            "node": {
+              "id": 271831,
+              "name": {
+                "full": "Karolina Dwornik"
+              },
+              "image": {
+                "large": "https://s4.anilist.co/file/anilistcdn/staff/large/default.jpg"
+              },
+              "description": null
+            }
+          },
+          {
+            "id": 605126,
+            "role": "Translator (Spanish)",
+            "node": {
+              "id": 214718,
+              "name": {
+                "full": "Marc Bernabé"
+              },
+              "image": {
+                "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n214718-EZfh6IyUJaQx.png"
+              },
+              "description": "[Twitter](https://twitter.com/marcbernabe) |  [Official Website](https://www.japonesenvinetas.com)\n\nHe is a translator and interpreter of Japanese, with special emphasis on the translation of manga and anime, a field in which he has a background of hundreds of volumes and episodes translated. In addition, he's a  specialist in didactics of the Japanese language and culture for Spanish speakers. He also has published many books about Japan and Asia.\n\nHe is famous for appearing in a Shin-chan's episode where the family goes to Spain."
+            }
+          },
+          {
+            "id": 606331,
+            "role": "Translator (Polish: vols 13-20)",
+            "node": {
+              "id": 286143,
+              "name": {
+                "full": "Agnieszka Zychma"
+              },
+              "image": {
+                "large": "https://s4.anilist.co/file/anilistcdn/staff/large/default.jpg"
+              },
+              "description": null
+            }
+          },
+          {
+            "id": 606332,
+            "role": "Translator (Polish: vols 5-12)",
+            "node": {
+              "id": 286287,
+              "name": {
+                "full": "Aleksandra Kulińska"
+              },
+              "image": {
+                "large": "https://s4.anilist.co/file/anilistcdn/staff/large/default.jpg"
+              },
+              "description": null
+            }
+          }
+        ]
+      }
+    }
+  }
+}

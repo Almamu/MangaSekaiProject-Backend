@@ -9,9 +9,7 @@ class AniListSource implements Source
 {
     const string ANILIST_URL = 'https://graphql.anilist.co';
 
-    private function buildGraphQLmatch(): string
-    {
-        return '
+    const string MATCH_REQUEST = '
 query (
     $isAdult: Boolean = false,
     $search: String,
@@ -84,7 +82,6 @@ query (
         }
     }
 }';
-    }
 
     public function match(string $search): array
     {
@@ -92,7 +89,7 @@ query (
             'variables' => [
                 'search' => $search,
             ],
-            'query' => $this->buildGraphQLmatch(),
+            'query' => self::MATCH_REQUEST,
         ];
 
         $response = Http::acceptJson()->asJson()->post(self::ANILIST_URL, $request);
@@ -100,45 +97,44 @@ query (
 
         $resultList = [];
 
-        if (! is_array($result)) {
+        if (! is_array($result) || ! array_key_exists('data', $result)) {
             return [];
         }
 
-        if (! array_key_exists('data', $result)) {
-            return [];
-        }
-
-        if (! array_key_exists('MANGA', $result['data'])) {
+        if (! is_array($result['data']) || ! array_key_exists('MANGA', $result['data'])) {
             return [];
         }
 
         $series = $result['data']['MANGA'];
         $authors = [];
 
-        if (is_null($series)) {
+        if (! is_array($series)) {
             return [];
         }
 
-        foreach ($series['staff']['edges'] as $staff) {
-            if (! array_key_exists('node', $staff)) {
-                continue;
-            }
-            if (! array_key_exists('name', $staff['node'])) {
-                continue;
-            }
-            if (! array_key_exists('full', $staff['node']['name'])) {
-                continue;
-            }
-            if (! array_key_exists('role', $staff)) {
-                continue;
-            }
+        if (array_key_exists('staff', $series) && is_array($series['staff']) && array_key_exists('edges', $series['staff'])) {
+            foreach ($series['staff']['edges'] as $staff) {
+                if (! is_array($staff) || ! array_key_exists('node', $staff)) {
+                    continue;
+                }
 
-            $authors[] = new AuthorMatch(
-                $staff['role'],
-                $staff['node']['name']['full'],
-                $staff['node']['image']['large'],
-                $staff['node']['description'] ?? '',
-            );
+                if (! is_array($staff['node']) || ! array_key_exists('name', $staff['node'])) {
+                    continue;
+                }
+                if (! is_array($staff['node']['name']) || ! array_key_exists('full', $staff['node']['name'])) {
+                    continue;
+                }
+                if (! array_key_exists('role', $staff)) {
+                    continue;
+                }
+
+                $authors[] = new AuthorMatch(
+                    $staff['role'],
+                    $staff['node']['name']['full'],
+                    $staff['node']['image']['large'],
+                    $staff['node']['description'] ?? '',
+                );
+            }
         }
 
         $startDate = $series['startDate']['year'].'/'.$series['startDate']['month'].'/'.$series['startDate']['day'];
