@@ -39,3 +39,8 @@ jobs:
         filename: coverage/cobertura.xml
         badge: true
         format: markdown
+        output: both
+
+    - name: 'Add Code Coverage to Job Summary'
+      run: |
+        cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
