@@ -22,4 +22,4 @@ jobs:
         php artisan jwt:secret --force --no-interaction
 
     - name: Run Testsuite
-      run: php artisan test
+      run: php artisan test --coverage
