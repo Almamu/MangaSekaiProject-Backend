@@ -14,6 +14,7 @@ jobs:
     - name: Install composer dependencies and make
       run: |
         git config --system --add safe.directory '*'
+        touch database/database.sqlite
         apt install -y make
         composer install
 
