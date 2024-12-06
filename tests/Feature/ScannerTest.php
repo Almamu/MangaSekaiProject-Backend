@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\DownloadResources;
 use App\Jobs\ScanMedia;
 use App\Media\Matcher\Data\AuthorMatch;
 use App\Media\Matcher\Data\SeriesMatch;
 use App\Media\Matcher\Matcher;
 use App\Models\Settings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -38,6 +40,10 @@ class ScannerTest extends TestCase
     protected function setup(): void
     {
         parent::setup();
+
+        Queue::fake([
+            DownloadResources::class,
+        ]);
 
         $this->vfs = self::baseVfs();
 
@@ -123,6 +129,8 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('series', 2);
         $this->assertDatabaseCount('chapters', 5);
         $this->assertDatabaseCount('pages', 6);
+
+        Queue::assertPushed(DownloadResources::class, 3);
     }
 
     public function test_media_create(): void
@@ -145,6 +153,8 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('series', 2);
         $this->assertDatabaseCount('chapters', 5);
         $this->assertDatabaseCount('pages', 6);
+
+        Queue::assertPushed(DownloadResources::class);
     }
 
     public function test_media_removal(): void
@@ -163,6 +173,8 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('series', 1);
         $this->assertDatabaseCount('chapters', 3);
         $this->assertDatabaseCount('pages', 3);
+
+        Queue::assertPushed(DownloadResources::class, 2);
     }
 
     public function test_media_zip(): void
@@ -186,5 +198,7 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('series', 1);
         $this->assertDatabaseCount('chapters', 4);
         $this->assertDatabaseCount('pages', 5);
+
+        Queue::assertPushed(DownloadResources::class);
     }
 }

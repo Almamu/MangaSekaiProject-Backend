@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Media\Matcher\Matcher;
 use App\Media\Scanner\Scanner;
 use App\Models\Chapter;
+use App\Models\CoverDownloadQueue;
 use App\Models\Page;
 use App\Models\Serie;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -67,6 +68,13 @@ class ScanMedia implements ShouldQueue
                             'description' => $result->description,
                             'synced' => true,
                         ]);
+
+                        if (trim($result->cover) !== '') {
+                            CoverDownloadQueue::insert([
+                                'serie_id' => $newSerie->id,
+                                'url' => $result->cover,
+                            ]);
+                        }
 
                         // TODO: STORE IMAGE PATH TO SYNC
                     } else {
@@ -133,6 +141,9 @@ class ScanMedia implements ShouldQueue
             'chapter_count' => DB::raw('('.Serie::query()->select([])->withCount('chapters')->toRawSql().')'),
             'pages_count' => DB::raw('('.Serie::query()->select([])->withSum('chapters', 'pages_count')->toRawSql().')'),
         ]);
+
+        // queue the next job that will sync the covers
+        DownloadResources::dispatch();
     }
 
     /**
