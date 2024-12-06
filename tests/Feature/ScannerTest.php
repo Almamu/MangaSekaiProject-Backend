@@ -3,8 +3,13 @@
 namespace Tests\Feature;
 
 use App\Jobs\ScanMedia;
+use App\Media\Matcher\Data\AuthorMatch;
+use App\Media\Matcher\Data\SeriesMatch;
+use App\Media\Matcher\Matcher;
 use App\Models\Settings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
@@ -48,6 +53,30 @@ class ScannerTest extends TestCase
         ]);
 
         $this->assertDatabaseCount('settings', 1);
+
+        // mock the media matcher to return controlled data so we do not call external services anymore
+        $this->instance(
+            Matcher::class,
+            Mockery::mock(Matcher::class, function (MockInterface $mock) {
+                $mock->shouldReceive('match')
+                    ->with('Bakuman.zip')
+                    ->andReturn([]);
+                $mock->shouldReceive('match')
+                    ->with('Bakuman')
+                    ->andReturn([new SeriesMatch(
+                        1000, '', '', '', [], 1, '', '', [
+                            new AuthorMatch('role', 'name', 'image', 'description'),
+                        ]
+                    )]);
+                $mock->shouldReceive('match')
+                    ->with('Death Note')
+                    ->andReturn([new SeriesMatch(
+                        1001, '', '', '', [], 1, '', '', [
+                            new AuthorMatch('role', 'name', 'image', 'description'),
+                        ]
+                    )]);
+            })
+        );
     }
 
     /**
