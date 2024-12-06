@@ -17,6 +17,7 @@ jobs:
 
     - name: Prepare Laravel Application
       run: |
+        touch .env
         php artisan key:generate
         php artisan jwt:secret --force --no-interaction
 
