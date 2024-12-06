@@ -9,7 +9,8 @@ use App\Models\ChaptersScan;
 use App\Models\PagesScan;
 use App\Models\Serie;
 use App\Models\SeriesScan;
-use App\Services\ImageHandlerService;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage as LaravelStorage;
 
@@ -22,13 +23,15 @@ class Scanner
 
     /**
      * @param  array<class-string<Processor>>  $processors
+     *
+     * @throws BindingResolutionException
      */
     public function __construct(
         private readonly array $processors,
-        ImageHandlerService $imageHandlerService,
-        private readonly Storage $storage
+        private readonly Storage $storage,
+        Application $app,
     ) {
-        $this->instances = array_map(fn (string $class) => new $class($imageHandlerService), $this->processors);
+        $this->instances = array_map(fn (string $class) => $app->make($class), $this->processors);
     }
 
     /**

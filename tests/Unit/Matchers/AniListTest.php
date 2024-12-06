@@ -12,7 +12,7 @@ class AniListTest extends TestCase
     {
         Http::fake([
             AniListSource::ANILIST_URL => Http::response(
-                file_get_contents(__DIR__.'/../../fixtures/anilist/bakuman.json') ?: '',
+                file_get_contents(base_path('tests/Fixtures/anilist/bakuman.json')) ?: '',
                 200,
                 ['Content-Type' => 'application/json']
             ),
@@ -36,7 +36,7 @@ class AniListTest extends TestCase
     {
         Http::fake([
             AniListSource::ANILIST_URL => Http::response(
-                file_get_contents(__DIR__.'/../../fixtures/anilist/failed-no-match.json') ?: '',
+                file_get_contents(base_path('tests/Fixtures/anilist/failed-no-match.json')) ?: '',
                 200,
                 ['Content-Type' => 'application/json']
             ),
@@ -70,7 +70,7 @@ class AniListTest extends TestCase
     {
         Http::fake([
             AniListSource::ANILIST_URL => Http::response(
-                file_get_contents(__DIR__.'/../../fixtures/anilist/failed-no-data.json') ?: '',
+                file_get_contents(base_path('tests/Fixtures/anilist/failed-no-data.json')) ?: '',
                 200,
                 ['Content-Type' => 'application/json']
             ),
@@ -87,7 +87,7 @@ class AniListTest extends TestCase
     {
         Http::fake([
             AniListSource::ANILIST_URL => Http::response(
-                file_get_contents(__DIR__.'/../../fixtures/anilist/failed-no-manga-data.json') ?: '',
+                file_get_contents(base_path('tests/Fixtures/anilist/failed-no-manga-data.json')) ?: '',
                 200,
                 ['Content-Type' => 'application/json']
             ),
@@ -104,7 +104,7 @@ class AniListTest extends TestCase
     {
         Http::fake([
             AniListSource::ANILIST_URL => Http::response(
-                file_get_contents(__DIR__.'/../../fixtures/anilist/failed-no-manga-data-object.json') ?: '',
+                file_get_contents(base_path('tests/Fixtures/anilist/failed-no-manga-data-object.json')) ?: '',
                 200,
                 ['Content-Type' => 'application/json']
             ),
@@ -121,7 +121,7 @@ class AniListTest extends TestCase
     {
         Http::fake([
             AniListSource::ANILIST_URL => Http::response(
-                file_get_contents(__DIR__.'/../../fixtures/anilist/bakuman-without-staff.json') ?: '',
+                file_get_contents(base_path('tests/Fixtures/anilist/bakuman-without-staff.json')) ?: '',
                 200,
                 ['Content-Type' => 'application/json']
             ),
@@ -145,7 +145,7 @@ class AniListTest extends TestCase
     {
         Http::fake([
             AniListSource::ANILIST_URL => Http::response(
-                file_get_contents(__DIR__.'/../../fixtures/anilist/bakuman-staff-malformed.json') ?: '',
+                file_get_contents(base_path('tests/Fixtures/anilist/bakuman-staff-malformed.json')) ?: '',
                 200,
                 ['Content-Type' => 'application/json']
             ),
@@ -169,7 +169,7 @@ class AniListTest extends TestCase
     {
         Http::fake([
             AniListSource::ANILIST_URL => Http::response(
-                file_get_contents(__DIR__.'/../../fixtures/anilist/bakuman-staff-malformed-2.json') ?: '',
+                file_get_contents(base_path('tests/Fixtures/anilist/bakuman-staff-malformed-2.json')) ?: '',
                 200,
                 ['Content-Type' => 'application/json']
             ),
@@ -193,7 +193,7 @@ class AniListTest extends TestCase
     {
         Http::fake([
             AniListSource::ANILIST_URL => Http::response(
-                file_get_contents(__DIR__.'/../../fixtures/anilist/bakuman-staff-malformed-3.json') ?: '',
+                file_get_contents(base_path('tests/Fixtures/anilist/bakuman-staff-malformed-3.json')) ?: '',
                 200,
                 ['Content-Type' => 'application/json']
             ),
@@ -217,7 +217,7 @@ class AniListTest extends TestCase
     {
         Http::fake([
             AniListSource::ANILIST_URL => Http::response(
-                file_get_contents(__DIR__.'/../../fixtures/anilist/bakuman-staff-malformed-4.json') ?: '',
+                file_get_contents(base_path('tests/Fixtures/anilist/bakuman-staff-malformed-4.json')) ?: '',
                 200,
                 ['Content-Type' => 'application/json']
             ),

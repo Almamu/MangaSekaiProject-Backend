@@ -16,7 +16,7 @@ class StorageTest extends TestCase
     /**
      * A basic unit test example.
      */
-    public function test_example(): void
+    public function test_storage_drivers(): void
     {
         $vfs = new \VirtualFileSystem\FileSystem;
         $vfs->createDirectory('/storage1/testfolder', true);

@@ -30,13 +30,13 @@ class AppServiceProvider extends ServiceProvider
             /** @var class-string<Handler>[] $config */
             $config = Config::get('media.handlers');
 
-            return new Storage($config);
+            return new Storage($config, $app);
         });
         $this->app->singleton(Matcher::class, function (Application $app) {
             /** @var class-string<Source>[] $config */
             $config = Config::get('media.matchers');
 
-            return new Matcher($config);
+            return new Matcher($config, $app);
         });
         $this->app->singleton(Scanner::class, function (Application $app) {
             /**
@@ -46,8 +46,8 @@ class AppServiceProvider extends ServiceProvider
 
             return new Scanner(
                 $processors,
-                $this->app->make(ImageHandlerService::class),
-                $this->app->make(Storage::class)
+                $app->make(Storage::class),
+                $app
             );
         });
     }

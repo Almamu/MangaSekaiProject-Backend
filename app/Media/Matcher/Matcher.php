@@ -4,6 +4,8 @@ namespace App\Media\Matcher;
 
 use App\Media\Matcher\Data\SeriesMatch;
 use App\Media\Matcher\Sources\Source;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Log;
 
 class Matcher
@@ -13,11 +15,14 @@ class Matcher
 
     /**
      * @param  class-string<Source>[]  $sources
+     *
+     * @throws BindingResolutionException
      */
     public function __construct(
-        private readonly array $sources
+        private readonly array $sources,
+        Application $app
     ) {
-        $this->instances = array_map(fn ($x) => new $x, $this->sources);
+        $this->instances = array_map(fn ($x) => $app->make($x), $this->sources);
     }
 
     /**
@@ -31,7 +36,7 @@ class Matcher
         foreach ($this->instances as $instance) {
             $result = $instance->match($search);
 
-            if (! is_array($result) || count($result) === 0) {
+            if (count($result) === 0) {
                 continue;
             }
 
