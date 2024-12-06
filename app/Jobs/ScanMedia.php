@@ -144,6 +144,15 @@ class ScanMedia implements ShouldQueue
      */
     public function middleware(): array
     {
+        // tests use this job to run the full import job
+        // but throttling the exceptions prevents them for being reported while running as dispatchSync
+        // so act a bit special on testing environments and do not include that middleware
+        if (config('app.env') === 'testing') {
+            return [
+                new WithoutOverlapping('scan-media'),
+            ];
+        }
+
         return [
             new WithoutOverlapping('scan-media'),
             (new ThrottlesExceptions(3, 5 * 60))->backoff(5),

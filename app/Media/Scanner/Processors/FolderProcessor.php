@@ -51,7 +51,7 @@ class FolderProcessor implements Processor
 
         // add found files as something else might handle them too
         foreach ($context->filesystem->files($serie->basepath) as $x) {
-            ChaptersScan::updateOrInsert(['chapter_scan_id' => $serie->id, 'basepath' => $x]);
+            ChaptersScan::updateOrInsert(['series_scan_id' => $serie->id, 'basepath' => $x]);
         }
 
         return true;
