@@ -58,7 +58,7 @@
             "@php artisan migrate --graceful --ansi"
         ],
         "post-install-cmd": [
-            "@php -r \"file_exists('.git') && system('git config core.hooksPath ./git-hooks');\"",
+            "git rev-parse --is-inside-work-tree && git config core.hooksPath ./git-hooks",
             "make ide_helper"
         ],
         "dev": [
