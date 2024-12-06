@@ -33,4 +33,4 @@ ide_helper:
 	@php artisan ide-helper:meta
 
 test:
-	@php artisan test --recreate-databases
+	@./vendor/bin/phpunit

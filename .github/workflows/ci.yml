@@ -17,9 +17,22 @@ jobs:
 
     - name: Prepare Laravel Application
       run: |
-        touch .env
+        cp .env.ci .env
         php artisan key:generate
         php artisan jwt:secret --force --no-interaction
 
+    - name: Run linter
+      run: make lint
+
     - name: Run Testsuite
-      run: php artisan test --coverage
+      run: vendor/bin/phpunit --coverage-clover coverage/clover.xml
+
+    - name: Code Coverage Summary Report
+      uses: saschanowak/CloverCodeCoverageSummary@1.1.0
+      with:
+        filename: coverage/clover.xml
+
+    - name: 'Add Code Coverage to Job Summary'
+      run: |
+        cat code-coverage-summary.md >> $GITHUB_STEP_SUMMARY
+        cat code-coverage-details.md >> $GITHUB_STEP_SUMMARY

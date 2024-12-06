@@ -1,5 +1,7 @@
 ![logo](doc/img/logo.png)
 
+[![Actions Status](https://github.com/Almamu/MangaSekaiProject-Backend/actions/workflows/ci.yml/badge.svg)](https://github.com/Almamu/MangaSekaiProject-Backend/actions)
+
 Eyes on the logo from LordBarta on deviantart: https://www.deviantart.com/lordbarta/art/Shock-Eyes-589962803
 
 # 1. What is MangaSekaiProject
