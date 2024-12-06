@@ -15,7 +15,7 @@ jobs:
       run: |
         git config --system --add safe.directory '*'
         touch database/database.sqlite
-        apt install -y make
+        apt install -y make php8.3-xdebug
         cp .env.ci .env
         composer install
         make dev_db_fresh
