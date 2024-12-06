@@ -20,7 +20,7 @@ class FolderProcessor implements Processor
         }
 
         // root directories are parseable too
-        if ($path === '') {
+        if ($path === '' || $path === '/') {
             return true;
         }
 
