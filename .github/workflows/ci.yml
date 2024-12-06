@@ -16,13 +16,13 @@ jobs:
         git config --system --add safe.directory '*'
         touch database/database.sqlite
         apt install -y make
+        cp .env.ci .env
         composer install
         make dev_db_fresh
         make ide_helper
 
     - name: Prepare Laravel Application
       run: |
-        cp .env.ci .env
         php artisan key:generate
         php artisan jwt:secret --force --no-interaction
 
