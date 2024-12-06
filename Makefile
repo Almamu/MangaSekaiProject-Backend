@@ -33,4 +33,4 @@ ide_helper:
 	@php artisan ide-helper:meta
 
 test:
-	@./vendor/bin/phpunit
+	@XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html coverage/html

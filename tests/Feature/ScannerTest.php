@@ -145,13 +145,17 @@ class ScannerTest extends TestCase
 
         $this->vfs->createFile('/storage1/Bakuman.zip', $zip->outputAsString());
 
+        $zip = new \PhpZip\ZipFile;
+        $zip->addFromString('001.jpg', '');
+        $this->vfs->createFile('/storage1/Bakuman/Chapter 4.zip', $zip->outputAsString());
+
         ScanMedia::dispatchSync();
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 3);
         $this->assertDatabaseCount('chapters_scans', 3);
         $this->assertDatabaseCount('series', 1);
-        $this->assertDatabaseCount('chapters', 3);
-        $this->assertDatabaseCount('pages', 4);
+        $this->assertDatabaseCount('chapters', 4);
+        $this->assertDatabaseCount('pages', 5);
     }
 }
