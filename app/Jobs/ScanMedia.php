@@ -5,9 +5,12 @@ namespace App\Jobs;
 use App\Media\Matcher\Matcher;
 use App\Media\Scanner\Scanner;
 use App\Models\Chapter;
+use App\Models\ChaptersScan;
 use App\Models\CoverDownloadQueue;
 use App\Models\Page;
+use App\Models\PagesScan;
 use App\Models\Serie;
+use App\Models\SeriesScan;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
@@ -40,7 +43,7 @@ class ScanMedia implements ShouldQueue
 
             // next is to discover pages for all these chapters
             $scanner->scan(
-                function ($serie) use ($matcher) {
+                function (SeriesScan $serie) use ($matcher) {
                     if (! is_null($serie->serie_id)) {
                         return;
                     }
@@ -51,7 +54,7 @@ class ScanMedia implements ShouldQueue
 
                     // if no results were found try again without extension
                     // it'd be good if matchers supported multiple criterias
-                    if (count($results) === 0) {
+                    if (count($results) === 0 && $extensionless !== $serie->basepath) {
                         $results = $matcher->match($extensionless);
                     }
 
@@ -75,8 +78,6 @@ class ScanMedia implements ShouldQueue
                                 'url' => $result->cover,
                             ]);
                         }
-
-                        // TODO: STORE IMAGE PATH TO SYNC
                     } else {
                         // no match, create an empty serie with the folder name so the user can update it manually
                         $newSerie = Serie::create([
@@ -89,7 +90,7 @@ class ScanMedia implements ShouldQueue
                     $serie->serie_id = $newSerie->id;
                     $serie->save();
                 },
-                function ($chapter) {
+                function (ChaptersScan $chapter) {
                     // no need to do anything for chapters already recorded in the database
                     if (! is_null($chapter->chapter_id)) {
                         return;
@@ -112,9 +113,9 @@ class ScanMedia implements ShouldQueue
                     $chapter->chapter_id = $newChapter->id;
                     $chapter->save();
                 },
-                function ($page) {
+                function (PagesScan $page) {
                     // extract number of chapter from the entry name
-                    if (preg_match('/[0-9.]+/', basename($page->path), $matches) == 0) {
+                    if (preg_match('/[0-9]+.?[0-9]*/', basename($page->path), $matches) == 0) {
                         return;
                     }
 

@@ -33,6 +33,10 @@ class ScannerTest extends TestCase
 
         $vfs->createFile('storage1/Bakuman/Chapter 1/001.jpg', '');
         $vfs->createFile('storage2/Bakuman/Chapter 2/001.jpg', '');
+        $vfs->createFile('storage1/Bakuman/Chapter 1/Invalid Page.jpg', '');
+
+        // add some directory noise so it's not detected by the scanner
+        $vfs->createDirectory('/storage1/Bakuman/Invalid chapter', true);
 
         return $vfs;
     }
@@ -70,17 +74,13 @@ class ScannerTest extends TestCase
                 $mock->shouldReceive('match')
                     ->with('Bakuman')
                     ->andReturn([new SeriesMatch(
-                        1000, '', '', '', [], 1, '', '', [
+                        1000, '', 'http://dummy.test', '', [], 1, '', '', [
                             new AuthorMatch('role', 'name', 'image', 'description'),
                         ]
                     )]);
                 $mock->shouldReceive('match')
                     ->with('Death Note')
-                    ->andReturn([new SeriesMatch(
-                        1001, '', '', '', [], 1, '', '', [
-                            new AuthorMatch('role', 'name', 'image', 'description'),
-                        ]
-                    )]);
+                    ->andReturn([]);
             })
         );
     }
@@ -95,7 +95,7 @@ class ScannerTest extends TestCase
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 2);
-        $this->assertDatabaseCount('chapters_scans', 2);
+        $this->assertDatabaseCount('chapters_scans', 3);
         $this->assertDatabaseCount('series', 1);
         $this->assertDatabaseCount('chapters', 2);
         $this->assertDatabaseCount('pages', 2);
@@ -110,7 +110,7 @@ class ScannerTest extends TestCase
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 2);
-        $this->assertDatabaseCount('chapters_scans', 4);
+        $this->assertDatabaseCount('chapters_scans', 5);
         $this->assertDatabaseCount('series', 1);
         $this->assertDatabaseCount('chapters', 3);
         $this->assertDatabaseCount('pages', 4);
@@ -125,7 +125,7 @@ class ScannerTest extends TestCase
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 3);
-        $this->assertDatabaseCount('chapters_scans', 6);
+        $this->assertDatabaseCount('chapters_scans', 7);
         $this->assertDatabaseCount('series', 2);
         $this->assertDatabaseCount('chapters', 5);
         $this->assertDatabaseCount('pages', 6);
@@ -149,7 +149,7 @@ class ScannerTest extends TestCase
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 3);
-        $this->assertDatabaseCount('chapters_scans', 6);
+        $this->assertDatabaseCount('chapters_scans', 7);
         $this->assertDatabaseCount('series', 2);
         $this->assertDatabaseCount('chapters', 5);
         $this->assertDatabaseCount('pages', 6);
@@ -169,7 +169,7 @@ class ScannerTest extends TestCase
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 2);
-        $this->assertDatabaseCount('chapters_scans', 3);
+        $this->assertDatabaseCount('chapters_scans', 4);
         $this->assertDatabaseCount('series', 1);
         $this->assertDatabaseCount('chapters', 3);
         $this->assertDatabaseCount('pages', 3);
@@ -194,7 +194,7 @@ class ScannerTest extends TestCase
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 3);
-        $this->assertDatabaseCount('chapters_scans', 4);
+        $this->assertDatabaseCount('chapters_scans', 5);
         $this->assertDatabaseCount('series', 1);
         $this->assertDatabaseCount('chapters', 4);
         $this->assertDatabaseCount('pages', 5);
