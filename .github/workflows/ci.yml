@@ -30,7 +30,7 @@ jobs:
       run: make lint
 
     - name: Run Testsuite
-      run: vendor/bin/phpunit --coverage-clover coverage/clover.xml
+      run: XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover coverage/clover.xml
 
     - name: Code Coverage Summary Report
       uses: saschanowak/CloverCodeCoverageSummary@1.1.0
