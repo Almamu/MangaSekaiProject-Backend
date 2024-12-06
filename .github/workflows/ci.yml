@@ -13,7 +13,7 @@ jobs:
 
     - name: Install composer dependencies and make
       run: |
-        composer install --no-scripts
+        composer install
         apt install -y make
 
     - name: Prepare Laravel Application
