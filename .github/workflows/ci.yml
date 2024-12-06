@@ -11,9 +11,10 @@ jobs:
       with:
         fetch-depth: 1
 
-    - name: Install composer dependencies
+    - name: Install composer dependencies and make
       run: |
         composer install --no-scripts
+        apt install -y make
 
     - name: Prepare Laravel Application
       run: |
