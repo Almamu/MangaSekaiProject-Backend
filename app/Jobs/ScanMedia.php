@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Media\AniList\Matcher;
+use App\Media\Matcher\Matcher;
 use App\Media\Scanner\Scanner;
 use App\Models\Chapter;
 use App\Models\Page;
@@ -29,24 +29,20 @@ class ScanMedia implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(Scanner $scanner): void
+    public function handle(Matcher $matcher, Scanner $scanner): void
     {
         Log::info('Starting up media scanner');
 
-        // TODO: SUPPORT MULTIPLE MATCHERS
-
-        DB::transaction(function () use ($scanner) {
+        DB::transaction(function () use ($scanner, $matcher) {
             // delete all pages off the database so they can be re-created
             Page::query()->delete();
 
             // next is to discover pages for all these chapters
             $scanner->scan(
-                function ($serie) {
+                function ($serie) use ($matcher) {
                     if (! is_null($serie->serie_id)) {
                         return;
                     }
-
-                    $matcher = new Matcher;
 
                     $extensionless = pathinfo(basename($serie->basepath), PATHINFO_FILENAME);
 

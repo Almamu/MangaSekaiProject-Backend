@@ -15,4 +15,7 @@ return [
         \App\Media\Storage\Handlers\ZipHandler::class,
         \App\Media\Storage\Handlers\FolderHandler::class,
     ],
+    'matchers' => [
+        \App\Media\Matcher\Sources\AniListSource::class,
+    ],
 ];

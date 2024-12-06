@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Media\Matcher;
+namespace App\Media\Matcher\Data;
 
 class AuthorMatch
 {

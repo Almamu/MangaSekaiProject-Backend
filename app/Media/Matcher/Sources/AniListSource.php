@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Media\AniList;
+namespace App\Media\Matcher\Sources;
 
-use App\Media\Matcher\AuthorMatch;
+use App\Media\Matcher\Data\AuthorMatch;
+use Illuminate\Support\Facades\Http;
 
-class Matcher implements \App\Media\Matcher\Matcher
+class AniListSource implements Source
 {
     const string ANILIST_URL = 'https://graphql.anilist.co';
 
@@ -94,33 +95,10 @@ query (
             'query' => $this->buildGraphQLmatch(),
         ];
 
-        $json_request = json_encode($request);
-
-        $curl = curl_init(self::ANILIST_URL);
-
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $json_request);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-        ]);
-
-        $result = curl_exec($curl);
-
-        if ($result === false) {
-            curl_close($curl);
-            throw new \Exception('Cannot request manga information');
-        }
-
-        if ($result === true) {
-            return [];
-        }
-
-        curl_close($curl);
+        $response = Http::acceptJson()->asJson()->post(self::ANILIST_URL, $request);
+        $result = $response->json();
 
         $resultList = [];
-
-        $result = json_decode($result, true);
 
         if (! is_array($result)) {
             return [];
@@ -170,7 +148,7 @@ query (
             $endDate = $series['endDate']['year'].'/'.$series['endDate']['month'].'/'.$series['endDate']['day'];
         }
 
-        $resultList[] = new \App\Media\Matcher\SeriesMatch(
+        $resultList[] = new \App\Media\Matcher\Data\SeriesMatch(
             $series['id'],
             $series['title']['userPreferred'],
             $series['coverImage']['large'] ?? '',

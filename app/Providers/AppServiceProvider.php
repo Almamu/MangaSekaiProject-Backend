@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Media\Matcher\Matcher;
+use App\Media\Matcher\Sources\Source;
 use App\Media\Scanner\Processors\Processor;
 use App\Media\Scanner\Scanner;
+use App\Media\Storage\Handlers\Handler;
 use App\Media\Storage\Storage;
 use App\Services\ImageHandlerService;
 use Illuminate\Contracts\Foundation\Application;
@@ -18,20 +21,26 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(ImageHandlerService::class, function (Application $app) {
-            /** @var array<string> $config */
+            /** @var string[] $config */
             $config = Config::get('media.mime_types');
 
             return new ImageHandlerService($config);
         });
         $this->app->singleton(Storage::class, function (Application $app) {
-            /** @var array<class-string> $config */
+            /** @var class-string<Handler>[] $config */
             $config = Config::get('media.handlers');
 
             return new Storage($config);
         });
+        $this->app->singleton(Matcher::class, function (Application $app) {
+            /** @var class-string<Source>[] $config */
+            $config = Config::get('media.matchers');
+
+            return new Matcher($config);
+        });
         $this->app->singleton(Scanner::class, function (Application $app) {
             /**
-             * @var array<class-string<Processor>> $processors
+             * @var class-string<Processor>[] $processors
              */
             $processors = Config::get('media.processors');
 

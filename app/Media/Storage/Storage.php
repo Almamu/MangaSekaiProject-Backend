@@ -2,6 +2,7 @@
 
 namespace App\Media\Storage;
 
+use App\Media\Storage\Handlers\Handler;
 use App\Models\Settings;
 use Illuminate\Support\Facades\Storage as LaravelStorage;
 use Symfony\Component\Filesystem\Exception\InvalidArgumentException;
@@ -19,9 +20,14 @@ class Storage
     private bool $initialized = false;
 
     /**
-     * @param  class-string[]  $handlers
+     * @var Handler[] List of media handlers to read images
      */
     // @phpstan-ignore-next-line
+    private array $instances = [];
+
+    /**
+     * @param  class-string<Handler>[]  $handlers
+     */
     public function __construct(private readonly array $handlers = []) {}
 
     private function initialize(): void
@@ -29,6 +35,8 @@ class Storage
         if ($this->initialized) {
             return;
         }
+
+        $this->instances = array_map(fn ($x) => new $x, $this->handlers);
 
         /** @var array<array{uuid: string, config: array<string, mixed>}> $folders */
         $folders = Settings::getScannerDirs()->value;
