@@ -30,7 +30,7 @@ class ScannerTest extends TestCase
         return $vfs;
     }
 
-    public function setup(): void
+    protected function setup(): void
     {
         parent::setup();
 
