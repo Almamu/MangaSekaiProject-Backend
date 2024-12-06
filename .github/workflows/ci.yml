@@ -17,6 +17,8 @@ jobs:
         touch database/database.sqlite
         apt install -y make
         composer install
+        make dev_db_fresh
+        make ide_helper
 
     - name: Prepare Laravel Application
       run: |
