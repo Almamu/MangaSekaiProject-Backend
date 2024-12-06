@@ -50,6 +50,7 @@ class MediaController
     )]
     public function queue(): Collection
     {
+        // TODO: FIND A BETTER WAY OF DOING THIS AS IT'S NOT TESTABLE
         return Job::all()->map(function (Job $job) {
             return class_basename($job->getName());
         });

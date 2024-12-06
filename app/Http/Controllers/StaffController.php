@@ -63,12 +63,12 @@ class StaffController
         return $staff;
     }
 
-    public function avatar(Staff $serie): \Illuminate\Http\Response
+    public function avatar(Staff $staff): \Illuminate\Http\Response
     {
-        if (! $serie->hasImage()) {
+        if (! $staff->hasImage()) {
             return response(status: 404);
         }
 
-        return response($serie->image, 200, ['Content-Type' => $serie->mime_type]);
+        return response($staff->image, 200, ['Content-Type' => $staff->mime_type]);
     }
 }

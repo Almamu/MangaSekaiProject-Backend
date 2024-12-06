@@ -78,9 +78,6 @@ class PageReadTest extends TestCase
         DownloadResources::dispatchSync();
     }
 
-    /**
-     * A basic feature test example.
-     */
     public function test_read_data_for_one_serie(): void
     {
         $response = $this->post('/api/v1/auth/login', [
@@ -122,13 +119,18 @@ class PageReadTest extends TestCase
         // get specific serie's info and ensure all the metadata is present
         $response = $this->get('/api/v1/series/'.$serie['id'], ['Authorization' => 'Bearer '.$token]);
 
-        $response
+        $serie = $response
             ->assertStatus(200)
             ->assertJson(fn (AssertableJson $json) => $json->hasAll([
                 'id', 'matcher', 'blocked_fields', 'staff', 'genres',
                 'image_url', 'synced', 'description', 'pages_count', 'chapter_count', 'name',
                 'created_at', 'updated_at',
-            ]));
+            ]))
+            ->json();
+
+        // find one of the staff members and request it
+        $this->assertIsArray($serie['staff']);
+        $this->assertCount(8, $serie['staff']);
 
         $response = $this->get('/api/v1/series/'.$serie['id'].'/chapters', ['Authorization' => 'Bearer '.$token]);
 
@@ -192,6 +194,48 @@ class PageReadTest extends TestCase
             ->assertStatus(200)
             ->assertHeader('Content-Type', 'image/png')
             ->assertStreamedContent($this->imageContents);
+    }
+
+    public function test_read_staff_data(): void
+    {
+        $response = $this->post('/api/v1/auth/login', [
+            'username' => 'admin',
+            'password' => 'password',
+        ]);
+
+        $token = $response
+            ->assertStatus(200)
+            ->assertJson(fn (AssertableJson $json) => $json->hasAll(['token', 'token_type', 'expires_in']))
+            ->json('token');
+
+        $response = $this->get('/api/v1/staff', ['Authorization' => 'Bearer '.$token]);
+
+        $staff = $response
+            ->assertStatus(200)
+            ->assertJson(fn (AssertableJson $json) => $json->hasAll([
+                'data', 'current_page', 'records_per_page', 'last_page', 'total',
+            ]))
+            ->json('data');
+
+        $this->assertIsArray($staff);
+        $this->assertCount(8, $staff);
+
+        $staff = $staff[0];
+
+        // get specific serie's info and ensure all the metadata is present
+        $response = $this->get('/api/v1/staff/'.$staff['id'], ['Authorization' => 'Bearer '.$token]);
+
+        $response
+            ->assertStatus(200)
+            ->assertJson(fn (AssertableJson $json) => $json->hasAll([
+                'id', 'name', 'description', 'image_url', 'created_at', 'updated_at',
+            ]));
+
+        $response = $this->get($staff['image_url'], ['Authorization' => 'Bearer '.$token]);
+
+        $response->assertStatus(200)
+            ->assertHeader('Content-Type', 'image/png')
+            ->assertContent($this->imageContents);
     }
 
     public function test_read_inexistent_cover_data_for_serie(): void

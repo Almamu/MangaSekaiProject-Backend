@@ -33,7 +33,7 @@ class Staff extends Model
     /** @use HasFactory<\Database\Factories\StaffFactory> */
     use HasFactory;
 
-    protected $hidden = ['pivot', 'mime_type', 'image'];
+    protected $hidden = ['pivot', 'mime_type', 'image', 'external_id', 'matcher'];
 
     protected $fillable = ['external_id', 'name', 'matcher', 'description', 'image', 'mime_type'];
 
