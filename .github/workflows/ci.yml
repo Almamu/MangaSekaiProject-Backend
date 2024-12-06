@@ -30,12 +30,14 @@ jobs:
       run: make lint
 
     - name: Run Testsuite
-      run: XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover coverage/clover.xml
+      run: XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-cobertura coverage/cobertura.xml
 
     - name: Code Coverage Summary Report
-      uses: saschanowak/CloverCodeCoverageSummary@1.1.0
+      uses: irongut/CodeCoverageSummary@v1.3.0
+
       with:
-        filename: coverage/clover.xml
+        filename: coverage/cobertura.xml
+        badge: true
 
     - name: 'Add Code Coverage to Job Summary'
       run: |
