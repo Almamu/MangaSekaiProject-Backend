@@ -32,7 +32,7 @@ class DownloadResources implements ShouldQueue
             try {
                 Log::debug('Downloading cover for series: '.$queue->serie_id.': '.$queue->url);
                 // download the image
-                $image = Http::accept('image/*')->get($queue->url);
+                $image = Http::accept('image/*')->get($queue->url)->throwIfStatus(fn ($status) => $status !== 200);
                 // image downloaded, store it in the series
                 $queue->serie->image = $image;
                 $queue->serie->save();

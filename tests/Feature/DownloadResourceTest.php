@@ -22,10 +22,11 @@ class DownloadResourceTest extends TestCase
     {
         Http::fake([
             'https://s4.anilist.co/file/anilistcdn/staff/large/n96888-S7t8RBq40Y70.png' => Http::response('IMAGE CONTENTS HERE', 200, ['Content-Type' => 'image/png']),
+            'https://non-existant-domain.test' => Http::response(status: 404)
         ]);
 
         // add one serie
-        $serie = Serie::insert([
+        $bakuman = Serie::insert([
             'matcher' => 'none',
             'name' => 'Bakuman',
             'description' => '',
@@ -33,14 +34,28 @@ class DownloadResourceTest extends TestCase
             'external_id' => 1,
         ]);
 
+        // add one serie
+        $deathnote = Serie::insert([
+            'matcher' => 'none',
+            'name' => 'Death Note',
+            'description' => '',
+            'synced' => true,
+            'external_id' => 1,
+        ]);
+
         CoverDownloadQueue::insert([
-            'serie_id' => $serie,
+            'serie_id' => $bakuman,
             'url' => 'https://s4.anilist.co/file/anilistcdn/staff/large/n96888-S7t8RBq40Y70.png',
+        ]);
+
+        CoverDownloadQueue::insert([
+            'serie_id' => $deathnote,
+            'url' => 'https://non-existant-domain.test',
         ]);
 
         DownloadResources::dispatchSync();
 
-        $this->assertDatabaseCount('cover_download_queue', 0);
+        $this->assertDatabaseCount('cover_download_queue', 1);
         $this->assertDatabaseHas('series', ['image' => 'IMAGE CONTENTS HERE']);
     }
 }

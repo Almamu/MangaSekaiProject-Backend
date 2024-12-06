@@ -161,9 +161,11 @@ class ScanMedia implements ShouldQueue
             ];
         }
 
+        // @codeCoverageIgnoreStart
         return [
             new WithoutOverlapping('scan-media'),
             (new ThrottlesExceptions(3, 5 * 60))->backoff(5),
         ];
+        // @codeCoverageIgnoreEnd
     }
 }
