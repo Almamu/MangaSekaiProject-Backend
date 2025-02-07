@@ -9,7 +9,7 @@ use Illuminate\Http\Response;
 use OpenApi\Attributes as OA;
 
 #[OA\PathItem(path: '/api/v1/auth', summary: 'Authentication')]
-#[OA\Schema(schema: 'TokenResponse', properties: [
+#[OA\Schema(schema: 'TokenResponse', required: ['token', 'token_type', 'expires_in'], properties: [
     new OA\Property(property: 'token', type: 'string'),
     new OA\Property(property: 'token_type', type: 'string'),
     new OA\Property(property: 'expires_in', type: 'integer'),

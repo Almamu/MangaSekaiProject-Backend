@@ -5,7 +5,7 @@ namespace App\Http\Responses;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use OpenApi\Attributes as OA;
 
-#[OA\Schema(schema: 'ErrorResponse', properties: [
+#[OA\Schema(schema: 'ErrorResponse', required: ['message'], properties: [
     new OA\Property(property: 'message', description: 'Translation independent error message', type: 'string'),
 ])]
 class ErrorResponse extends \Illuminate\Http\JsonResponse

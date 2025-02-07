@@ -7,9 +7,11 @@ use OpenApi\Attributes as OA;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 class PaginationSchema extends OA\Schema
 {
-    public function __construct(string $schema, ?string $ref = null, ?string $type = null, ?array $properties = null)
+    public function __construct(string $schema, ?string $ref = null, ?string $type = null, ?array $properties = null, ?array $required = null)
     {
-        parent::__construct(schema: $schema, properties: array_merge(
+        parent::__construct(schema: $schema, required: array_merge($required ?? [], [
+            'data', 'current_page', 'records_per_page', 'last_page', 'total',
+        ]), properties: array_merge(
             $properties ?? [],
             [
                 new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: $ref, type: $type)),

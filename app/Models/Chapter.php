@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use OpenApi\Attributes as OA;
 
 #[PaginationSchema(schema: 'ChapterListPaginated', type: Chapter::class)]
-#[OA\Schema(properties: [
+#[OA\Schema(required: ['id', 'number', 'pages_count'], properties: [
     new OA\Property(property: 'id', type: 'integer'),
     new OA\Property(property: 'number', type: 'integer'),
     new OA\Property(property: 'pages_count', type: 'integer'),

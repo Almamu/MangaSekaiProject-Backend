@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use OpenApi\Attributes as OA;
 
-#[OA\Schema(schema: 'Series', properties: [
+#[OA\Schema(schema: 'Series', required: [
+    'id', 'name', 'chapter_count', 'pages_count', 'description',
+    'synced', 'image_url', 'genres', 'staff', 'created_at', 'updated_at',
+], properties: [
     new OA\Property(property: 'id', type: 'integer'),
     new OA\Property(property: 'name', type: 'string'),
     new OA\Property(property: 'chapter_count', type: 'integer'),
@@ -18,10 +21,13 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'image_url', type: 'string'),
     new OA\Property(property: 'genres', type: 'array', items: new OA\Items(type: Genre::class)),
     new OA\Property(property: 'staff', type: 'array', items: new OA\Items(ref: '#/components/schemas/StaffWithRole')),
-    new OA\Property(property: 'created_at', type: 'string'),
-    new OA\Property(property: 'updated_at', type: 'string'),
+    new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+    new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
 ])]
-#[OA\Schema(schema: 'SeriesListItem', properties: [
+#[OA\Schema(schema: 'SeriesListItem', required: [
+    'id', 'name', 'chapter_count', 'pages_count', 'description',
+    'synced', 'image_url', 'created_at', 'updated_at',
+], properties: [
     new OA\Property(property: 'id', type: 'integer'),
     new OA\Property(property: 'name', type: 'string'),
     new OA\Property(property: 'chapter_count', type: 'integer'),
@@ -29,8 +35,8 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'description', type: 'string'),
     new OA\Property(property: 'synced', type: 'boolean'),
     new OA\Property(property: 'image_url', type: 'string'),
-    new OA\Property(property: 'created_at', type: 'string'),
-    new OA\Property(property: 'updated_at', type: 'string'),
+    new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+    new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
 ])]
 #[PaginationSchema(schema: 'SeriesListPaginated', ref: '#/components/schemas/SeriesListItem')]
 /**
