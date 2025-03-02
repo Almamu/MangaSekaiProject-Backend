@@ -23,7 +23,9 @@ class AuthenticationController
         description: 'Login to the application',
         summary: 'Performs login',
         requestBody: new OA\RequestBody(
+            required: true,
             content: new OA\JsonContent(
+                schema: 'LoginRequest',
                 required: ['username', 'password'],
                 properties: [
                     new OA\Property(property: 'username', type: 'string'),

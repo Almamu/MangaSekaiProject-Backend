@@ -45,6 +45,31 @@ class SeriesController
         );
     }
 
+    /**
+     * @return \Illuminate\Support\Collection<int, Serie>
+     */
+    #[OA\Get(
+        path: '/api/v1/series/recentlyUpdated',
+        operationId: 'recentlyUpdatedSeries',
+        description: 'List of the last 10 series updated',
+        security: OpenApiSpec::SECURITY,
+        tags: ['series'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'List of series',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/SeriesListItem'),
+                )
+            ),
+        ]
+    )]
+    public function recentlyUpdated(): \Illuminate\Support\Collection
+    {
+        return Serie::query()->orderBy('updated_at', 'desc')->take(10)->get();
+    }
+
     #[OA\Get(
         path: '/api/v1/series/{serieId}',
         operationId: 'getSerieById',

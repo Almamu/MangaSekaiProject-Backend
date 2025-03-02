@@ -18,7 +18,7 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'pages_count', type: 'integer'),
     new OA\Property(property: 'description', type: 'string'),
     new OA\Property(property: 'synced', type: 'boolean'),
-    new OA\Property(property: 'image_url', type: 'string'),
+    new OA\Property(property: 'image_url', type: 'string', nullable: true),
     new OA\Property(property: 'genres', type: 'array', items: new OA\Items(type: Genre::class)),
     new OA\Property(property: 'staff', type: 'array', items: new OA\Items(ref: '#/components/schemas/StaffWithRole')),
     new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
@@ -34,7 +34,7 @@ use OpenApi\Attributes as OA;
     new OA\Property(property: 'pages_count', type: 'integer'),
     new OA\Property(property: 'description', type: 'string'),
     new OA\Property(property: 'synced', type: 'boolean'),
-    new OA\Property(property: 'image_url', type: 'string'),
+    new OA\Property(property: 'image_url', type: 'string', nullable: true),
     new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
     new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
 ])]
