@@ -64,9 +64,9 @@ class PageReadTest extends TestCase
                         $this->bakumanContent,
                         headers: ['Content-Type' => 'application/json']
                     );
-                } else {
-                    return Http::response();
                 }
+
+                return Http::response();
             }
 
             return Http::response($this->imageContents, headers: ['Content-Type' => 'image/png']);
@@ -87,14 +87,14 @@ class PageReadTest extends TestCase
 
         $token = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => $json->hasAll(['token', 'token_type', 'expires_in']))
+            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll(['token', 'token_type', 'expires_in']))
             ->json('token');
 
         $response = $this->get('/api/v1/series', ['Authorization' => 'Bearer '.$token]);
 
         $series = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => $json->hasAll([
+            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll([
                 'data', 'current_page', 'records_per_page', 'last_page', 'total',
             ]))
             ->json('data');
@@ -121,7 +121,7 @@ class PageReadTest extends TestCase
 
         $serie = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => $json->hasAll([
+            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll([
                 'id', 'matcher', 'blocked_fields', 'staff', 'genres',
                 'image_url', 'synced', 'description', 'pages_count', 'chapter_count', 'name',
                 'created_at', 'updated_at',
@@ -136,7 +136,7 @@ class PageReadTest extends TestCase
 
         $chapters = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => $json->hasAll([
+            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll([
                 'data', 'current_page', 'records_per_page', 'last_page', 'total',
             ]))
             ->json('data');
@@ -205,14 +205,14 @@ class PageReadTest extends TestCase
 
         $token = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => $json->hasAll(['token', 'token_type', 'expires_in']))
+            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll(['token', 'token_type', 'expires_in']))
             ->json('token');
 
         $response = $this->get('/api/v1/staff', ['Authorization' => 'Bearer '.$token]);
 
         $staff = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => $json->hasAll([
+            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll([
                 'data', 'current_page', 'records_per_page', 'last_page', 'total',
             ]))
             ->json('data');
@@ -227,7 +227,7 @@ class PageReadTest extends TestCase
 
         $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => $json->hasAll([
+            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll([
                 'id', 'name', 'description', 'image_url', 'created_at', 'updated_at',
             ]));
 
@@ -247,14 +247,14 @@ class PageReadTest extends TestCase
 
         $token = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => $json->hasAll(['token', 'token_type', 'expires_in']))
+            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll(['token', 'token_type', 'expires_in']))
             ->json('token');
 
         $response = $this->get('/api/v1/series', ['Authorization' => 'Bearer '.$token]);
 
         $series = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => $json->hasAll([
+            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll([
                 'data', 'current_page', 'records_per_page', 'last_page', 'total',
             ]))
             ->json('data');

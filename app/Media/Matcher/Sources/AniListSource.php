@@ -116,20 +116,34 @@ query (
 
         if (array_key_exists('staff', $series) && is_array($series['staff']) && array_key_exists('edges', $series['staff'])) {
             foreach ($series['staff']['edges'] as $staff) {
-                if (! is_array($staff) || ! array_key_exists('node', $staff)) {
+                if (! is_array($staff)) {
+                    continue;
+                }
+                if (! array_key_exists('node', $staff)) {
+                    continue;
+                }
+                if (! is_array($staff['node'])) {
+                    continue;
+                }
+                if (! array_key_exists('name', $staff['node'])) {
                     continue;
                 }
 
-                if (! is_array($staff['node']) || ! array_key_exists('name', $staff['node'])) {
+                if (! is_array($staff['node']['name'])) {
                     continue;
                 }
-                if (! is_array($staff['node']['name']) || ! array_key_exists('full', $staff['node']['name'])) {
+                if (! array_key_exists('full', $staff['node']['name'])) {
                     continue;
                 }
+
                 if (! array_key_exists('role', $staff)) {
                     continue;
                 }
-                if (! array_key_exists('id', $staff) || ! is_int($staff['id'])) {
+
+                if (! array_key_exists('id', $staff)) {
+                    continue;
+                }
+                if (! is_int($staff['id'])) {
                     continue;
                 }
 

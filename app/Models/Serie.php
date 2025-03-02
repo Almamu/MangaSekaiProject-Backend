@@ -53,7 +53,7 @@ class Serie extends Model
 
     protected $fillable = ['name', 'chapter_count', 'pages_count', 'description', 'image', 'mime_type', 'external_id', 'matcher', 'blocked_fields'];
 
-    public function casts(): array
+    protected function casts(): array
     {
         return [
             'blocked_fields' => 'array',

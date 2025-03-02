@@ -13,7 +13,7 @@ readonly class FolderHandler implements Handler
     public function providable(ParsedPath $path): bool
     {
         // normal paths shouldn't have a container
-        if ($path->hasContainer() === true) {
+        if ($path->hasContainer()) {
             return false;
         }
 

@@ -16,8 +16,13 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  */
 class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject
 {
+    use Authenticatable;
+    use Authorizable;
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use Authenticatable, Authorizable, HasFactory, Notifiable;
+    use HasFactory;
+
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.

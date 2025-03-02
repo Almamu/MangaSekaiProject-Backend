@@ -15,7 +15,7 @@ class FolderProcessor implements Processor
     public function processable(ExecutionContext $context, string $path = ''): bool
     {
         // paths that are containers should not be supported
-        if (str_contains($path, ':') === true) {
+        if (str_contains($path, ':')) {
             return false;
         }
 

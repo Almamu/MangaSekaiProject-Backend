@@ -29,7 +29,7 @@ class AuthenticationTest extends TestCase
 
         $token = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => $json->hasAll(['token', 'token_type', 'expires_in']))
+            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll(['token', 'token_type', 'expires_in']))
             ->json('token');
 
         // refresh current token
@@ -37,7 +37,7 @@ class AuthenticationTest extends TestCase
 
         $token = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => $json->hasAll(['token', 'token_type', 'expires_in']))
+            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll(['token', 'token_type', 'expires_in']))
             ->json('token');
 
         // finally logout

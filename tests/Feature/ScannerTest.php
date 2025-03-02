@@ -23,7 +23,7 @@ class ScannerTest extends TestCase
 
     private \VirtualFileSystem\FileSystem $vfs;
 
-    private static function baseVfs(): \VirtualFileSystem\FileSystem
+    private function baseVfs(): \VirtualFileSystem\FileSystem
     {
         $vfs = new \VirtualFileSystem\FileSystem;
 
@@ -50,7 +50,7 @@ class ScannerTest extends TestCase
             DownloadResources::class,
         ]);
 
-        $this->vfs = self::baseVfs();
+        $this->vfs = $this->baseVfs();
 
         // add some default settings to the database for these tests
         Settings::addScannerDir([
@@ -68,7 +68,7 @@ class ScannerTest extends TestCase
         // mock the media matcher to return controlled data so we do not call external services anymore
         $this->instance(
             Matcher::class,
-            Mockery::mock(Matcher::class, function (MockInterface $mock) {
+            Mockery::mock(Matcher::class, function (MockInterface $mock): void {
                 $mock->shouldReceive('match')
                     ->with('Bakuman.zip')
                     ->andReturn([]);
@@ -204,6 +204,7 @@ class ScannerTest extends TestCase
         $zip = new \PhpZip\ZipFile;
         $zip->addFromString('__MACOSX/dummydata', '');
         $zip->addFromString('001.jpg', '');
+
         $this->vfs->createFile('/storage1/Bakuman/Chapter 4.zip', $zip->outputAsString());
 
         ScanMedia::dispatchSync();

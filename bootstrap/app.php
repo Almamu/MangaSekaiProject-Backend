@@ -10,7 +10,7 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
     )
-    ->withMiddleware(function (Middleware $middleware) {
+    ->withMiddleware(function (Middleware $middleware): void {
         // the web routes we have aren't really relevant and can be stripped of any middleware we don't want
         // these are related to cookies which aren't useful for us
         $middleware->web(remove: [
@@ -26,6 +26,6 @@ return Application::configure(basePath: dirname(__DIR__))
             fn () => ErrorResponse::throwException('AUTHENTICATED', 401)
         );
     })
-    ->withExceptions(function (Exceptions $exceptions) {
+    ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(fn (\Illuminate\Http\Request $request) => $request->is('api/*'));
     })->create();

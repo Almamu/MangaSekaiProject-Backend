@@ -77,7 +77,7 @@ class ZipProcessor implements Processor
                 continue;
             }
 
-            if (preg_match_all('/[0-9]+/', $entry, $matches) < 2) {
+            if (preg_match_all('/\d+/', $entry, $matches) < 2) {
                 continue;
             }
 
@@ -137,9 +137,11 @@ class ZipProcessor implements Processor
             if (str_starts_with($entry, '__MACOSX/')) {
                 continue;
             }
-            if (preg_match_all('/[0-9]+/', $entry, $matches) == 0) {
+
+            if (preg_match_all('/\d+/', $entry, $matches) == 0) {
                 continue;
             }
+
             if (count($matches[0]) == 0) {
                 continue;
             }
@@ -169,10 +171,6 @@ class ZipProcessor implements Processor
         $archive = $this->extractZipContainer($page->path);
 
         // this zip was already parsed before, so it can be ignored
-        if (in_array($context->uuid.'://'.$archive, $this->handles)) {
-            return true;
-        }
-
-        return false;
+        return in_array($context->uuid.'://'.$archive, $this->handles);
     }
 }

@@ -57,7 +57,7 @@ class Scanner
         PagesScan::query()->delete();
 
         // go through every series and remove the ones we do not find in processors anymore
-        SeriesScan::query()->chunk(100, function ($series) use ($serieCallback) {
+        SeriesScan::query()->chunk(100, function ($series) use ($serieCallback): void {
             foreach ($series as $serie) {
                 $context = new ExecutionContext($serie->library_id, LaravelStorage::disk($serie->library_id), $this);
 
@@ -82,7 +82,7 @@ class Scanner
         // finally go through every chapter scanned
         // and create the corresponding records in the database
         ChaptersScan::with('serie')
-            ->chunk(100, function ($chapters) use ($chapterCallback) {
+            ->chunk(100, function ($chapters) use ($chapterCallback): void {
                 foreach ($chapters as $chapter) {
                     $library_id = $chapter->serie->library_id;
                     $context = new ExecutionContext($library_id, LaravelStorage::disk($library_id), $this);
@@ -103,7 +103,7 @@ class Scanner
         Chapter::whereNotIn('id', ChaptersScan::query()->select('chapter_id'))->delete();
 
         // equally, do the same with pages
-        PagesScan::with(['chapter', 'chapter.serie'])->chunk(100, function ($pages) use ($pageCallback) {
+        PagesScan::with(['chapter', 'chapter.serie'])->chunk(100, function ($pages) use ($pageCallback): void {
             foreach ($pages as $page) {
                 $library_id = $page->chapter->serie->library_id;
                 $context = new ExecutionContext($library_id, LaravelStorage::disk($library_id), $this);

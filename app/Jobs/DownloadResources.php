@@ -28,7 +28,7 @@ class DownloadResources implements ShouldQueue
     {
         Log::debug('Running resource download job');
 
-        CoverDownloadQueue::all()->each(function (CoverDownloadQueue $queue) {
+        CoverDownloadQueue::all()->each(function (CoverDownloadQueue $queue): void {
             try {
                 if ($queue->type === 'serie' && ! is_null($queue->serie)) {
                     Log::debug('Downloading cover for series: '.$queue->serie_id.': '.$queue->url);
@@ -39,7 +39,7 @@ class DownloadResources implements ShouldQueue
                 }
 
                 // download the image
-                $image = Http::accept('image/*')->get($queue->url)->throwIfStatus(fn ($status) => $status !== 200);
+                $image = Http::accept('image/*')->get($queue->url)->throwIfStatus(fn ($status): bool => $status !== 200);
                 $mime_type = $image->getHeader('Content-Type')[0] ?? '';
 
                 // image downloaded, store it where it belongs
@@ -56,8 +56,8 @@ class DownloadResources implements ShouldQueue
 
                 // the queue entry can be removed
                 $queue->delete();
-            } catch (\Exception $e) {
-                Log::error($e->getMessage());
+            } catch (\Exception $exception) {
+                Log::error($exception->getMessage());
             }
         });
     }

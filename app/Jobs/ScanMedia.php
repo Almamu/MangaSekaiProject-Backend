@@ -38,13 +38,13 @@ class ScanMedia implements ShouldQueue
     {
         Log::info('Starting up media scanner');
 
-        DB::transaction(function () use ($scanner, $matcher) {
+        DB::transaction(function () use ($scanner, $matcher): void {
             // delete all pages off the database so they can be re-created
             Page::query()->delete();
 
             // next is to discover pages for all these chapters
             $scanner->scan(
-                function (SeriesScan $serie) use ($matcher) {
+                function (SeriesScan $serie) use ($matcher): void {
                     if (! is_null($serie->serie_id)) {
                         return;
                     }
@@ -55,11 +55,11 @@ class ScanMedia implements ShouldQueue
 
                     // if no results were found try again without extension
                     // it'd be good if matchers supported multiple criterias
-                    if (count($results) === 0 && $extensionless !== $serie->basepath) {
+                    if ($results === [] && $extensionless !== $serie->basepath) {
                         $results = $matcher->match($extensionless);
                     }
 
-                    if (count($results) > 0) {
+                    if ($results !== []) {
                         // use topmost result to create data
                         $result = $results[0];
 
@@ -93,8 +93,10 @@ class ScanMedia implements ShouldQueue
                                 'name' => $staff->name,
                                 'description' => $staff->description,
                             ]);
-
-                            if (trim($staff->image) === '' || ! is_null($newStaff->image)) {
+                            if (trim($staff->image) === '') {
+                                continue;
+                            }
+                            if (! is_null($newStaff->image)) {
                                 continue;
                             }
 
@@ -125,7 +127,7 @@ class ScanMedia implements ShouldQueue
                     $serie->serie_id = $newSerie->id;
                     $serie->save();
                 },
-                function (ChaptersScan $chapter) {
+                function (ChaptersScan $chapter): void {
                     // no need to do anything for chapters already recorded in the database
                     if (! is_null($chapter->chapter_id)) {
                         return;
@@ -148,9 +150,9 @@ class ScanMedia implements ShouldQueue
                     $chapter->chapter_id = $newChapter->id;
                     $chapter->save();
                 },
-                function (PagesScan $page) {
+                function (PagesScan $page): void {
                     // extract number of chapter from the entry name
-                    if (preg_match('/[0-9]+.?[0-9]*/', basename($page->path), $matches) == 0) {
+                    if (preg_match('/\d+.?\d*/', basename($page->path), $matches) == 0) {
                         return;
                     }
 

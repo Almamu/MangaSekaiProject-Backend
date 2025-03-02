@@ -41,7 +41,7 @@ class ImageHandlerService
 
         $types = $this->mimeTypeGuesser->getMimeTypes($extension);
 
-        if (count($types) === 0) {
+        if ($types === []) {
             return 'application/octet-stream';
         }
 

@@ -155,9 +155,9 @@ class SeriesController
 
     public function page(Page $page): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        return response()->stream(function () use ($page) {
+        return response()->stream(function () use ($page): void {
             // read the file in blocks of 4096 bytes and output it to the client
-            $this->storage->open($page->path, function ($stream) {
+            $this->storage->open($page->path, function ($stream): void {
                 while (feof($stream) === false) {
                     echo fread($stream, 8192);
                     ob_flush();

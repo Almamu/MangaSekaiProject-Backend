@@ -93,10 +93,11 @@ class Storage
     public function storage(ParsedPath|string $path): \Illuminate\Contracts\Filesystem\Filesystem
     {
         $this->initialize();
-
         if ($path instanceof ParsedPath) {
             return LaravelStorage::disk($path->disk);
-        } elseif (str_contains($path, '://')) {
+        }
+
+        if (str_contains($path, '://')) {
             return LaravelStorage::disk(self::path($path)->disk);
         }
 
@@ -132,9 +133,9 @@ class Storage
         if (! is_null($path)) {
             // path points inside a container, return the appropiate object
             return new ParsedPath($disk, $container ?? '', $path);
-        } else {
-            // the path doesn't point inside a container, make sure to reflect that
-            return new ParsedPath($disk, '', $container ?? '');
         }
+
+        // the path doesn't point inside a container, make sure to reflect that
+        return new ParsedPath($disk, '', $container ?? '');
     }
 }

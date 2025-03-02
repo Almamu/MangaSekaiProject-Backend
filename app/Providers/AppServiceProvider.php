@@ -20,25 +20,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(ImageHandlerService::class, function (Application $app) {
+        $this->app->singleton(ImageHandlerService::class, function (Application $app): \App\Services\ImageHandlerService {
             /** @var string[] $config */
             $config = Config::get('media.mime_types');
 
             return new ImageHandlerService($config);
         });
-        $this->app->singleton(Storage::class, function (Application $app) {
+        $this->app->singleton(Storage::class, function (Application $app): \App\Media\Storage\Storage {
             /** @var class-string<Handler>[] $config */
             $config = Config::get('media.handlers');
 
             return new Storage($config, $app);
         });
-        $this->app->singleton(Matcher::class, function (Application $app) {
+        $this->app->singleton(Matcher::class, function (Application $app): \App\Media\Matcher\Matcher {
             /** @var class-string<Source>[] $config */
             $config = Config::get('media.matchers');
 
             return new Matcher($config, $app);
         });
-        $this->app->singleton(Scanner::class, function (Application $app) {
+        $this->app->singleton(Scanner::class, function (Application $app): \App\Media\Scanner\Scanner {
             /**
              * @var class-string<Processor>[] $processors
              */

@@ -18,11 +18,7 @@ readonly class ZipHandler implements Handler
         }
 
         // ensure the extension matches too
-        if (pathinfo($path->container, PATHINFO_EXTENSION) !== 'zip') {
-            return false;
-        }
-
-        return true;
+        return pathinfo($path->container, PATHINFO_EXTENSION) === 'zip';
     }
 
     public function provide(ParsedPath $path, callable $callback): void
@@ -38,6 +34,7 @@ readonly class ZipHandler implements Handler
         // open the zip file
         $zip = new \PhpZip\ZipFile;
         $zip->openFromStream($stream);
+
         $entry = $zip->getEntry($path->path);
 
         if ($entry->isDirectory()) {
