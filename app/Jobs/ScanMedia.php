@@ -16,29 +16,19 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ScanMedia implements ShouldQueue
 {
     use Queueable;
 
     /**
-     * Create a new job instance.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * Execute the job.
      */
-    public function handle(Matcher $matcher, Scanner $scanner): void
+    public function handle(Matcher $matcher, Scanner $scanner, \Illuminate\Log\LogManager $logManager, \Illuminate\Database\DatabaseManager $databaseManager): void
     {
-        Log::info('Starting up media scanner');
+        $logManager->info('Starting up media scanner');
 
-        DB::transaction(function () use ($scanner, $matcher): void {
+        $databaseManager->transaction(function () use ($scanner, $matcher): void {
             // delete all pages off the database so they can be re-created
             Page::query()->delete();
 
@@ -96,6 +86,7 @@ class ScanMedia implements ShouldQueue
                             if (trim($staff->image) === '') {
                                 continue;
                             }
+
                             if (! is_null($newStaff->image)) {
                                 continue;
                             }
@@ -170,14 +161,14 @@ class ScanMedia implements ShouldQueue
 
         // finally update all counters
         Chapter::query()->update([
-            'pages_count' => DB::raw('('.Chapter::query()->select([])->withCount('pages')->toRawSql().')'),
+            'pages_count' => $databaseManager->raw('('.Chapter::query()->select([])->withCount('pages')->toRawSql().')'),
         ]);
 
         // finally update chapter count and page count
         Serie::query()->update([
             // TODO: ISN'T THIS A BIT DIRTY? SHOULDN'T WE BE ABLE TO RUN THIS EASILY?
-            'chapter_count' => DB::raw('('.Serie::query()->select([])->withCount('chapters')->toRawSql().')'),
-            'pages_count' => DB::raw('('.Serie::query()->select([])->withSum('chapters', 'pages_count')->toRawSql().')'),
+            'chapter_count' => $databaseManager->raw('('.Serie::query()->select([])->withCount('chapters')->toRawSql().')'),
+            'pages_count' => $databaseManager->raw('('.Serie::query()->select([])->withSum('chapters', 'pages_count')->toRawSql().')'),
         ]);
 
         // queue the next job that will sync the covers

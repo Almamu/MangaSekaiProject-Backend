@@ -12,6 +12,8 @@ class StaffController
 {
     use PaginatedResponseTrait;
 
+    public function __construct(private \Illuminate\Contracts\Routing\ResponseFactory $responseFactory) {}
+
     #[OA\Get(
         path: '/api/v1/staff',
         operationId: 'listStaff',
@@ -66,9 +68,10 @@ class StaffController
     public function avatar(Staff $staff): \Illuminate\Http\Response
     {
         if (! $staff->hasImage()) {
-            return response(status: 404);
+            return $this->responseFactory->make(status: 404);
         }
 
-        return response($staff->image, 200, ['Content-Type' => $staff->mime_type]);
+        // @phpstan-ignore-next-line this one is not a real issue because hasImage already checks for nulls before, so this can only be string
+        return $this->responseFactory->make($staff->image, 200, ['Content-Type' => $staff->mime_type]);
     }
 }

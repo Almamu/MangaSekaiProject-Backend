@@ -11,8 +11,6 @@ use App\Models\Serie;
 use App\Models\SeriesScan;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage as LaravelStorage;
 
 class Scanner
 {
@@ -30,6 +28,8 @@ class Scanner
         private readonly array $processors,
         private readonly Storage $storage,
         Application $app,
+        private \Illuminate\Log\LogManager $logManager,
+        private \Illuminate\Filesystem\FilesystemManager $filesystemManager,
     ) {
         $this->instances = array_map(fn (string $class) => $app->make($class), $this->processors);
     }
@@ -46,9 +46,9 @@ class Scanner
     public function scan(callable $serieCallback, callable $chapterCallback, callable $pageCallback): void
     {
         foreach ($this->storage->getDisks() as $storage) {
-            Log::info('Scanning storage '.$storage.' for new manga');
+            $this->logManager->info('Scanning storage '.$storage.' for new manga');
 
-            $context = new ExecutionContext($storage, LaravelStorage::disk($storage), $this);
+            $context = new ExecutionContext($storage, $this->filesystemManager->disk($storage), $this);
 
             $this->process($context);
         }
@@ -59,16 +59,16 @@ class Scanner
         // go through every series and remove the ones we do not find in processors anymore
         SeriesScan::query()->chunk(100, function ($series) use ($serieCallback): void {
             foreach ($series as $serie) {
-                $context = new ExecutionContext($serie->library_id, LaravelStorage::disk($serie->library_id), $this);
+                $context = new ExecutionContext($serie->library_id, $this->filesystemManager->disk($serie->library_id), $this);
 
-                Log::info('Processing '.$serie->library_id.'://'.$serie->basepath);
+                $this->logManager->info('Processing '.$serie->library_id.'://'.$serie->basepath);
 
                 if ($this->processSeries($context, $serie)) {
                     $serieCallback($serie);
                 } else {
                     // not processable, remove from the database
                     if (! is_null($serie->serie_id)) {
-                        Log::info('Deleting '.$serie->library_id.'://'.$serie->basepath.' association on the database');
+                        $this->logManager->info('Deleting '.$serie->library_id.'://'.$serie->basepath.' association on the database');
                     }
 
                     $serie->delete();
@@ -85,9 +85,9 @@ class Scanner
             ->chunk(100, function ($chapters) use ($chapterCallback): void {
                 foreach ($chapters as $chapter) {
                     $library_id = $chapter->serie->library_id;
-                    $context = new ExecutionContext($library_id, LaravelStorage::disk($library_id), $this);
+                    $context = new ExecutionContext($library_id, $this->filesystemManager->disk($library_id), $this);
 
-                    Log::info('Processing '.$chapter->basepath.' on library '.$library_id);
+                    $this->logManager->info('Processing '.$chapter->basepath.' on library '.$library_id);
 
                     if ($this->processChapter($context, $chapter)) {
                         $chapterCallback($chapter);
@@ -106,7 +106,7 @@ class Scanner
         PagesScan::with(['chapter', 'chapter.serie'])->chunk(100, function ($pages) use ($pageCallback): void {
             foreach ($pages as $page) {
                 $library_id = $page->chapter->serie->library_id;
-                $context = new ExecutionContext($library_id, LaravelStorage::disk($library_id), $this);
+                $context = new ExecutionContext($library_id, $this->filesystemManager->disk($library_id), $this);
 
                 if ($this->processPage($context, $page)) {
                     $pageCallback($page);
@@ -131,7 +131,7 @@ class Scanner
             }
         }
 
-        Log::error('Could not process the filesystem '.$context->uuid.': no suitable processor found');
+        $this->logManager->error('Could not process the filesystem '.$context->uuid.': no suitable processor found');
 
         return false;
     }
@@ -148,7 +148,7 @@ class Scanner
             }
         }
 
-        Log::error('Could not process series on '.$context->uuid.'://'.$serie->basepath);
+        $this->logManager->error('Could not process series on '.$context->uuid.'://'.$serie->basepath);
 
         return false;
     }
@@ -165,7 +165,7 @@ class Scanner
             }
         }
 
-        Log::error('Could not process chapters on '.$context->uuid.'://'.$chapter->basepath);
+        $this->logManager->error('Could not process chapters on '.$context->uuid.'://'.$chapter->basepath);
 
         return false;
     }
@@ -182,7 +182,7 @@ class Scanner
             }
         }
 
-        Log::error('Could not process pages on '.$context->uuid.'://'.$page->path);
+        $this->logManager->error('Could not process pages on '.$context->uuid.'://'.$page->path);
 
         return false;
     }

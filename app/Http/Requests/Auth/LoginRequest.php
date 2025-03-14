@@ -12,6 +12,8 @@ use Illuminate\Validation\ValidationException;
  */
 class LoginRequest extends \Illuminate\Foundation\Http\FormRequest
 {
+    public function __construct(private \Illuminate\Contracts\Auth\Guard $guard, private \Illuminate\Events\Dispatcher $dispatcher) {}
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -46,7 +48,7 @@ class LoginRequest extends \Illuminate\Foundation\Http\FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $token = auth()->attempt($this->only('username', 'password'));
+        $token = $this->guard->attempt($this->only('username', 'password'));
 
         if (! is_string($token)) {
             RateLimiter::hit($this->throttleKey());
@@ -70,7 +72,7 @@ class LoginRequest extends \Illuminate\Foundation\Http\FormRequest
             return;
         }
 
-        event(new Lockout($this));
+        $this->dispatcher->dispatch(new Lockout($this));
 
         $this->throwValidationError('TOO_MANY_ATTEMPTS');
     }

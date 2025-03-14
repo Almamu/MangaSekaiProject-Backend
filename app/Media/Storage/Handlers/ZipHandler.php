@@ -27,9 +27,7 @@ readonly class ZipHandler implements Handler
 
         $stream = $disk->readStream($path->container);
 
-        if (is_null($stream)) {
-            throw new CannotReadFileException($path);
-        }
+        throw_if(is_null($stream), new CannotReadFileException($path));
 
         // open the zip file
         $zip = new \PhpZip\ZipFile;
@@ -37,15 +35,11 @@ readonly class ZipHandler implements Handler
 
         $entry = $zip->getEntry($path->path);
 
-        if ($entry->isDirectory()) {
-            throw new CannotReadFileException($path);
-        }
+        throw_if($entry->isDirectory(), new CannotReadFileException($path));
 
         $data = $entry->getData();
 
-        if (is_null($data)) {
-            throw new CannotReadFileException($path);
-        }
+        throw_if(is_null($data), new CannotReadFileException($path));
 
         $callback($data->getDataAsStream());
     }

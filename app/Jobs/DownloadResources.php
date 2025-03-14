@@ -7,33 +7,24 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class DownloadResources implements ShouldQueue
 {
     use Queueable;
 
     /**
-     * Create a new job instance.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(\Illuminate\Log\LogManager $logManager): void
     {
-        Log::debug('Running resource download job');
+        $logManager->debug('Running resource download job');
 
-        CoverDownloadQueue::all()->each(function (CoverDownloadQueue $queue): void {
+        CoverDownloadQueue::all()->each(function (CoverDownloadQueue $queue) use ($logManager): void {
             try {
                 if ($queue->type === 'serie' && ! is_null($queue->serie)) {
-                    Log::debug('Downloading cover for series: '.$queue->serie_id.': '.$queue->url);
+                    $logManager->debug('Downloading cover for series: '.$queue->serie_id.': '.$queue->url);
                 } elseif ($queue->type === 'staff' && ! is_null($queue->staff)) {
-                    Log::debug('Downloading cover for staff: '.$queue->staff_id.': '.$queue->url);
+                    $logManager->debug('Downloading cover for staff: '.$queue->staff_id.': '.$queue->url);
                 } else {
                     throw new \Exception('Unknown resource type: '.$queue->type);
                 }
@@ -57,7 +48,7 @@ class DownloadResources implements ShouldQueue
                 // the queue entry can be removed
                 $queue->delete();
             } catch (\Exception $exception) {
-                Log::error($exception->getMessage());
+                $logManager->error($exception->getMessage());
             }
         });
     }

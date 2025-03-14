@@ -9,7 +9,6 @@ use App\Media\Matcher\Data\SeriesMatch;
 use App\Media\Matcher\Matcher;
 use App\Models\Settings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Queue;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -22,6 +21,8 @@ class ScannerTest extends TestCase
     protected bool $seed = true;
 
     private \VirtualFileSystem\FileSystem $vfs;
+
+    public function __construct(private \Illuminate\Queue\QueueManager $queueManager) {}
 
     private function baseVfs(): \VirtualFileSystem\FileSystem
     {
@@ -46,7 +47,7 @@ class ScannerTest extends TestCase
     {
         parent::setup();
 
-        Queue::fake([
+        $this->queueManager->fake([
             DownloadResources::class,
         ]);
 
@@ -137,7 +138,7 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('staff', 1);
         $this->assertDatabaseCount('cover_download_queue', 2);
 
-        Queue::assertPushed(DownloadResources::class, 3);
+        $this->queueManager->assertPushed(DownloadResources::class, 3);
     }
 
     public function test_media_create(): void
@@ -163,7 +164,7 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('staff', 1);
         $this->assertDatabaseCount('cover_download_queue', 2);
 
-        Queue::assertPushed(DownloadResources::class);
+        $this->queueManager->assertPushed(DownloadResources::class);
     }
 
     public function test_media_removal(): void
@@ -185,7 +186,7 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('staff', 1);
         $this->assertDatabaseCount('cover_download_queue', 2);
 
-        Queue::assertPushed(DownloadResources::class, 2);
+        $this->queueManager->assertPushed(DownloadResources::class, 2);
     }
 
     public function test_media_zip(): void
@@ -218,6 +219,6 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('staff', 1);
         $this->assertDatabaseCount('cover_download_queue', 2);
 
-        Queue::assertPushed(DownloadResources::class);
+        $this->queueManager->assertPushed(DownloadResources::class);
     }
 }

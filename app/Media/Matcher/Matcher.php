@@ -6,7 +6,6 @@ use App\Media\Matcher\Data\SeriesMatch;
 use App\Media\Matcher\Sources\Source;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Support\Facades\Log;
 
 class Matcher
 {
@@ -20,7 +19,8 @@ class Matcher
      */
     public function __construct(
         private readonly array $sources,
-        Application $app
+        Application $app,
+        private \Illuminate\Log\LogManager $logManager
     ) {
         $this->instances = array_map(fn ($x) => $app->make($x), $this->sources);
     }
@@ -43,7 +43,7 @@ class Matcher
             return $result;
         }
 
-        Log::info('No results found for "'.$search.'"');
+        $this->logManager->info('No results found for "'.$search.'"');
 
         return [];
     }

@@ -16,7 +16,7 @@ class SeriesController
 {
     use PaginatedResponseTrait;
 
-    public function __construct(private readonly Storage $storage) {}
+    public function __construct(private readonly Storage $storage, private \Illuminate\Contracts\Routing\ResponseFactory $responseFactory) {}
 
     #[OA\Get(
         path: '/api/v1/series',
@@ -115,10 +115,10 @@ class SeriesController
             ),
         ]
     )]
-    public function chapters(Serie $serie): PaginatedResponse
+    public function chapters(Serie $serie, \Illuminate\Http\Request $request): PaginatedResponse
     {
-        $perPage = request()->integer('perPage', OpenApiSpec::RECORDS_PER_PAGE);
-        $page = request()->integer('page', 1);
+        $perPage = $request->integer('perPage', OpenApiSpec::RECORDS_PER_PAGE);
+        $page = $request->integer('page', 1);
         $pagination = $serie->chapters()->orderBy('number')->paginate($perPage, page: $page);
 
         return new PaginatedResponse($pagination);
@@ -155,7 +155,7 @@ class SeriesController
 
     public function page(Page $page): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        return response()->stream(function () use ($page): void {
+        return $this->responseFactory->stream(function () use ($page): void {
             // read the file in blocks of 4096 bytes and output it to the client
             $this->storage->open($page->path, function ($stream): void {
                 while (feof($stream) === false) {
@@ -172,9 +172,10 @@ class SeriesController
     public function cover(Serie $serie): \Illuminate\Http\Response
     {
         if (! $serie->hasImage()) {
-            return response(status: 404);
+            return $this->responseFactory->make(status: 404);
         }
 
-        return response($serie->image, 200, ['Content-Type' => $serie->mime_type]);
+        // @phpstan-ignore-next-line this one is not a real issue because hasImage already checks for nulls before, so this can only be string
+        return $this->responseFactory->make($serie->image, 200, ['Content-Type' => $serie->mime_type]);
     }
 }

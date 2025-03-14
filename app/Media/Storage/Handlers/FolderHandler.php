@@ -24,9 +24,7 @@ readonly class FolderHandler implements Handler
     {
         $stream = $this->storage->storage($path->disk)->readStream($path->path);
 
-        if (is_null($stream)) {
-            throw new CannotReadFileException($path);
-        }
+        throw_if(is_null($stream), new CannotReadFileException($path));
 
         $callback($stream);
 

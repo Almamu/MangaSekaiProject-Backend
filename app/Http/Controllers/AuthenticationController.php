@@ -17,6 +17,8 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'auth', description: 'Authentication')]
 class AuthenticationController
 {
+    public function __construct(private \Illuminate\Contracts\Auth\Guard $guard, private \Illuminate\Contracts\Routing\ResponseFactory $responseFactory) {}
+
     #[OA\Post(
         path: '/api/v1/auth/login',
         operationId: 'login',
@@ -65,10 +67,10 @@ class AuthenticationController
     )]
     public function logout(): Response
     {
-        auth()->invalidate();
-        auth()->logout();
+        $this->guard->invalidate();
+        $this->guard->logout();
 
-        return response(status: 200);
+        return $this->responseFactory->make(status: 200);
     }
 
     #[OA\Post(
@@ -87,15 +89,15 @@ class AuthenticationController
     )]
     public function refresh(): JsonResponse
     {
-        return $this->tokenResponse(auth()->refresh(true));
+        return $this->tokenResponse($this->guard->refresh(true));
     }
 
     private function tokenResponse(string $token): \Illuminate\Http\JsonResponse
     {
-        return response()->json([
+        return $this->responseFactory->json([
             'token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
+            'expires_in' => $this->guard->factory()->getTTL() * 60,
         ]);
     }
 }

@@ -119,12 +119,15 @@ query (
                 if (! is_array($staff)) {
                     continue;
                 }
+
                 if (! array_key_exists('node', $staff)) {
                     continue;
                 }
+
                 if (! is_array($staff['node'])) {
                     continue;
                 }
+
                 if (! array_key_exists('name', $staff['node'])) {
                     continue;
                 }
@@ -132,6 +135,7 @@ query (
                 if (! is_array($staff['node']['name'])) {
                     continue;
                 }
+
                 if (! array_key_exists('full', $staff['node']['name'])) {
                     continue;
                 }
@@ -143,6 +147,7 @@ query (
                 if (! array_key_exists('id', $staff)) {
                     continue;
                 }
+
                 if (! is_int($staff['id'])) {
                     continue;
                 }

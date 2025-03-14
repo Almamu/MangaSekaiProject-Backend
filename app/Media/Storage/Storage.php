@@ -6,7 +6,6 @@ use App\Media\Storage\Exceptions\CannotReadFileException;
 use App\Media\Storage\Handlers\Handler;
 use App\Models\Settings;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Support\Facades\Storage as LaravelStorage;
 use Symfony\Component\Filesystem\Exception\InvalidArgumentException;
 
 class Storage
@@ -32,6 +31,7 @@ class Storage
     public function __construct(
         private readonly array $handlers,
         private readonly Application $app,
+        private \Illuminate\Filesystem\FilesystemManager $filesystemManager,
     ) {}
 
     private function initialize(): void
@@ -46,7 +46,7 @@ class Storage
         $folders = Settings::getScannerDirs()->value;
 
         foreach ($folders as $folder) {
-            LaravelStorage::set($folder['uuid'], LaravelStorage::build($folder['config']));
+            $this->filesystemManager->set($folder['uuid'], $this->filesystemManager->build($folder['config']));
             $this->disks[] = $folder['uuid'];
         }
 
@@ -94,14 +94,14 @@ class Storage
     {
         $this->initialize();
         if ($path instanceof ParsedPath) {
-            return LaravelStorage::disk($path->disk);
+            return $this->filesystemManager->disk($path->disk);
         }
 
         if (str_contains($path, '://')) {
-            return LaravelStorage::disk(self::path($path)->disk);
+            return $this->filesystemManager->disk(self::path($path)->disk);
         }
 
-        return LaravelStorage::disk($path);
+        return $this->filesystemManager->disk($path);
     }
 
     /**
@@ -109,17 +109,12 @@ class Storage
      */
     public static function path(string $path): ParsedPath
     {
-        // ensure the path has a protocol specified
-        if (! str_contains($path, '://')) {
-            throw new InvalidArgumentException('Invalid path provided');
-        }
+        throw_unless(str_contains($path, '://'), new InvalidArgumentException('Invalid path provided'));
 
         // paths with a semicolon can be a bit problematic, so extract the second part
         $path = explode(':', $path);
 
-        if (count($path) < 2 || count($path) > 3) {
-            throw new InvalidArgumentException('Invalid path provided');
-        }
+        throw_if(count($path) < 2 || count($path) > 3, new InvalidArgumentException('Invalid path provided'));
 
         $disk = array_shift($path);
         $container = array_shift($path);
