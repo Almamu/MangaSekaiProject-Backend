@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Jobs\ScanMedia;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
@@ -15,8 +16,7 @@ class JobQueueTest extends TestCase
 
     public function test_job_queue(): void
     {
-        $queueManager = $this->app->make(\Illuminate\Queue\QueueManager::class);
-        $queueManager->fake([
+        Queue::fake([
             ScanMedia::class,
         ]);
 
@@ -38,6 +38,6 @@ class JobQueueTest extends TestCase
 
         $response->assertStatus(200);
 
-        $queueManager->assertPushed(ScanMedia::class);
+        Queue::assertPushed(ScanMedia::class);
     }
 }

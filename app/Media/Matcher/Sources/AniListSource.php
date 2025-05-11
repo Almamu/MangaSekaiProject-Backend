@@ -125,6 +125,7 @@ query (
         try {
             return [$this->buildSeries($result['data']['MANGA'])];
         } catch (\Exception $exception) {
+            echo $exception->getMessage();
             \Log::error('Error occurred during series data parsing.', ['exception' => $exception->getMessage()]);
             return [];
         }
@@ -137,10 +138,15 @@ query (
     {
         throw_if(
             !is_array($series) ||
+                !array_key_exists('id', $series) ||
                 !is_int($series['id']) ||
+                !array_key_exists('startDate', $series) ||
                 !is_array($series['startDate']) ||
+                !array_key_exists('title', $series) ||
                 !is_array($series['title']) ||
+                !array_key_exists('averageScore', $series) ||
                 !is_int($series['averageScore']) ||
+                !array_key_exists('userPreferred', $series['title']) ||
                 !is_string($series['title']['userPreferred']),
             new \Exception('Invalid series data.'),
         );
@@ -175,7 +181,7 @@ query (
         $startDate = $this->formatDate($series['startDate']);
         $endDate = $this->formatDate($series['endDate'] ?? []);
 
-        return new \App\Media\Matcher\Data\SeriesMatch(
+        return new SeriesMatch(
             $series['id'],
             self::MATCHER_NAME,
             $series['title']['userPreferred'],
@@ -200,7 +206,7 @@ query (
 
         foreach ($staffEdges as $staff) {
             $author = $this->parseAuthor($staff);
-            if ($author instanceof \App\Media\Matcher\Data\AuthorMatch) {
+            if ($author instanceof AuthorMatch) {
                 $authors[] = $author;
             }
         }
@@ -212,12 +218,19 @@ query (
     {
         if (
             !is_array($staff) ||
+                !array_key_exists('id', $staff) ||
                 !is_int($staff['id']) ||
+                !array_key_exists('role', $staff) ||
                 !is_string($staff['role']) ||
+                !array_key_exists('node', $staff) ||
                 !is_array($staff['node']) ||
+                !array_key_exists('name', $staff['node']) ||
                 !is_array($staff['node']['name']) ||
+                !array_key_exists('image', $staff['node']) ||
                 !is_array($staff['node']['image']) ||
+                !array_key_exists('full', $staff['node']['name']) ||
                 !is_string($staff['node']['name']['full']) ||
+                !array_key_exists('large', $staff['node']['image']) ||
                 !is_string($staff['node']['image']['large'])
         ) {
             return null;

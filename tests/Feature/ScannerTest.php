@@ -9,6 +9,7 @@ use App\Media\Matcher\Data\SeriesMatch;
 use App\Media\Matcher\Matcher;
 use App\Models\Settings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -21,8 +22,6 @@ class ScannerTest extends TestCase
     protected bool $seed = true;
 
     private \VirtualFileSystem\FileSystem $vfs;
-
-    private \Illuminate\Queue\QueueManager $queueManager;
 
     private function baseVfs(): \VirtualFileSystem\FileSystem
     {
@@ -43,12 +42,16 @@ class ScannerTest extends TestCase
         return $vfs;
     }
 
+    private function dispatchScanMedia(): void
+    {
+        ScanMedia::dispatchSync($this->app->make(\Illuminate\Config\Repository::class));
+    }
+
     protected function setup(): void
     {
         parent::setup();
 
-        $this->queueManager = $this->app->make(\Illuminate\Queue\QueueManager::class);
-        $this->queueManager->fake([
+        Queue::fake([
             DownloadResources::class,
         ]);
 
@@ -65,7 +68,8 @@ class ScannerTest extends TestCase
             'root' => $this->vfs->path('storage2'),
         ]);
 
-        $this->assertDatabaseCount('settings', 1);
+        // scanner_dirs && complete_threshold
+        $this->assertDatabaseCount('settings', 2);
 
         // mock the media matcher to return controlled data so we do not call external services anymore
         $this->instance(
@@ -91,7 +95,7 @@ class ScannerTest extends TestCase
     #[TestDox('Adds some media, adds new chapters to that library and then adds new series to it')]
     public function test_media_start_add_chapters_update(): void
     {
-        ScanMedia::dispatchSync();
+        $this->dispatchScanMedia();
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 2);
@@ -108,7 +112,7 @@ class ScannerTest extends TestCase
         $this->vfs->createFile('/storage1/Bakuman/Chapter 3/001.jpg', '');
         $this->vfs->createFile('/storage2/Bakuman/Chapter 3/002.jpg', '');
 
-        ScanMedia::dispatchSync();
+        $this->dispatchScanMedia();
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 2);
@@ -125,7 +129,7 @@ class ScannerTest extends TestCase
         $this->vfs->createFile('/storage1/Death Note/Chapter 1/001.jpg', '');
         $this->vfs->createFile('/storage1/Death Note/Chapter 2/001.jpg', '');
 
-        ScanMedia::dispatchSync();
+        $this->dispatchScanMedia();
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 3);
@@ -136,7 +140,7 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('staff', 1);
         $this->assertDatabaseCount('cover_download_queue', 2);
 
-        $this->queueManager->assertPushed(DownloadResources::class, 3);
+        Queue::assertPushed(DownloadResources::class, 3);
     }
 
     public function test_media_create(): void
@@ -151,7 +155,7 @@ class ScannerTest extends TestCase
         $this->vfs->createFile('/storage1/Death Note/Chapter 1/001.jpg', '');
         $this->vfs->createFile('/storage1/Death Note/Chapter 2/001.jpg', '');
 
-        ScanMedia::dispatchSync();
+        $this->dispatchScanMedia();
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 3);
@@ -162,7 +166,7 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('staff', 1);
         $this->assertDatabaseCount('cover_download_queue', 2);
 
-        $this->queueManager->assertPushed(DownloadResources::class);
+        Queue::assertPushed(DownloadResources::class);
     }
 
     public function test_media_removal(): void
@@ -173,7 +177,7 @@ class ScannerTest extends TestCase
         $this->vfs->container()->remove('storage1/Bakuman/Chapter 3', true);
         $this->vfs->container()->remove('storage1/Death Note', true);
 
-        ScanMedia::dispatchSync();
+        $this->dispatchScanMedia();
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 2);
@@ -184,7 +188,7 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('staff', 1);
         $this->assertDatabaseCount('cover_download_queue', 2);
 
-        $this->queueManager->assertPushed(DownloadResources::class, 2);
+        Queue::assertPushed(DownloadResources::class, 2);
     }
 
     public function test_media_zip(): void
@@ -206,7 +210,7 @@ class ScannerTest extends TestCase
 
         $this->vfs->createFile('/storage1/Bakuman/Chapter 4.zip', $zip->outputAsString());
 
-        ScanMedia::dispatchSync();
+        $this->dispatchScanMedia();
 
         // check that proper records were created
         $this->assertDatabaseCount('series_scans', 3);
@@ -217,6 +221,6 @@ class ScannerTest extends TestCase
         $this->assertDatabaseCount('staff', 1);
         $this->assertDatabaseCount('cover_download_queue', 2);
 
-        $this->queueManager->assertPushed(DownloadResources::class);
+        Queue::assertPushed(DownloadResources::class);
     }
 }

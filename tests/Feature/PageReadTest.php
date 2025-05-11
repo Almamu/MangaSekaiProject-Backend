@@ -6,8 +6,10 @@ use App\Jobs\DownloadResources;
 use App\Jobs\ScanMedia;
 use App\Media\Matcher\Sources\AniListSource;
 use App\Models\Settings;
+use Illuminate\Container\Container;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
@@ -70,8 +72,8 @@ class PageReadTest extends TestCase
         });
 
         // dispatch a scan so the data is available
-        ScanMedia::dispatchSync();
-        // run one of the download resources instances to fetch the dummy covers
+        ScanMedia::dispatchSync($this->app->make(\Illuminate\Config\Repository::class));
+        // run one of the download resources instances to fetch the fake covers
         DownloadResources::dispatchSync();
     }
 

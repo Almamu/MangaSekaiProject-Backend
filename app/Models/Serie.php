@@ -2,136 +2,10 @@
 
 namespace App\Models;
 
-use App\Http\OpenApi\PaginationSchema;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Routing\UrlGenerator;
-use OpenApi\Attributes as OA;
 
-#[OA\Schema(
-    schema: 'Series',
-    required: [
-        'id',
-        'name',
-        'chapter_count',
-        'pages_count',
-        'description',
-        'synced',
-        'image_url',
-        'genres',
-        'staff',
-        'created_at',
-        'updated_at',
-    ],
-    properties: [
-        new OA\Property(
-            property: 'id',
-            type: 'integer',
-        ),
-        new OA\Property(
-            property: 'name',
-            type: 'string',
-        ),
-        new OA\Property(
-            property: 'chapter_count',
-            type: 'integer',
-        ),
-        new OA\Property(
-            property: 'pages_count',
-            type: 'integer',
-        ),
-        new OA\Property(
-            property: 'description',
-            type: 'string',
-        ),
-        new OA\Property(
-            property: 'synced',
-            type: 'boolean',
-        ),
-        new OA\Property(
-            property: 'image_url',
-            type: 'string',
-            nullable: true,
-        ),
-        new OA\Property(
-            property: 'genres',
-            type: 'array',
-            items: new OA\Items(type: Genre::class),
-        ),
-        new OA\Property(
-            property: 'staff',
-            type: 'array',
-            items: new OA\Items(ref: '#/components/schemas/StaffWithRole'),
-        ),
-        new OA\Property(
-            property: 'created_at',
-            type: 'string',
-            format: 'date-time',
-        ),
-        new OA\Property(
-            property: 'updated_at',
-            type: 'string',
-            format: 'date-time',
-        ),
-    ],
-)]
-#[OA\Schema(
-    schema: 'SeriesListItem',
-    required: [
-        'id',
-        'name',
-        'chapter_count',
-        'pages_count',
-        'description',
-        'synced',
-        'image_url',
-        'created_at',
-        'updated_at',
-    ],
-    properties: [
-        new OA\Property(
-            property: 'id',
-            type: 'integer',
-        ),
-        new OA\Property(
-            property: 'name',
-            type: 'string',
-        ),
-        new OA\Property(
-            property: 'chapter_count',
-            type: 'integer',
-        ),
-        new OA\Property(
-            property: 'pages_count',
-            type: 'integer',
-        ),
-        new OA\Property(
-            property: 'description',
-            type: 'string',
-        ),
-        new OA\Property(
-            property: 'synced',
-            type: 'boolean',
-        ),
-        new OA\Property(
-            property: 'image_url',
-            type: 'string',
-            nullable: true,
-        ),
-        new OA\Property(
-            property: 'created_at',
-            type: 'string',
-            format: 'date-time',
-        ),
-        new OA\Property(
-            property: 'updated_at',
-            type: 'string',
-            format: 'date-time',
-        ),
-    ],
-)]
-#[PaginationSchema(schema: 'SeriesListPaginated', ref: '#/components/schemas/SeriesListItem')]
 /**
  * @mixin IdeHelperSerie
  */
@@ -141,8 +15,6 @@ class Serie extends Model
     use HasFactory;
 
     protected $hidden = ['image', 'mime_type', 'genres', 'staff', 'external_id', 'blocked_fields'];
-
-    protected $appends = ['image_url'];
 
     protected $fillable = [
         'name',
@@ -157,18 +29,6 @@ class Serie extends Model
         'blocked_fields',
     ];
 
-    /**
-     * Create a new Eloquent model instance.
-     *
-     * @param array<mixed, mixed> $attributes
-     */
-    public function __construct(
-        array $attributes,
-        private readonly \Illuminate\Routing\UrlGenerator $urlGenerator,
-    ) {
-        parent::__construct($attributes);
-    }
-
     protected function casts(): array
     {
         return [
@@ -176,18 +36,7 @@ class Serie extends Model
         ];
     }
 
-    // @phpstan-ignore missingType.generics (This doesn't really have generics but something we have is triggering it)
-    protected function imageUrl(): \Illuminate\Database\Eloquent\Casts\Attribute
-    {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
-            if (!$this->hasImage()) {
-                return null;
-            }
-
-            return $this->urlGenerator->route('images.series.cover', ['serie' => $this->id]);
-        });
-    }
-
+    //TODO: ARE THESE REALLY NEEDED?
     /**
      * @return \Illuminate\Database\Eloquent\Collection<int, Genre>
      */

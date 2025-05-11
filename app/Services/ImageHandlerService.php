@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Serie;
+use App\Models\Staff;
 use Symfony\Component\Mime\MimeTypes;
 
 /**

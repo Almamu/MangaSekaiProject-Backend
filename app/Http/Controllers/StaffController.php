@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Mappers\StaffMapper;
 use App\Http\OpenApi\OpenApiSpec;
 use App\Http\Responses\PaginatedResponse;
 use App\Http\Responses\PaginatedResponseTrait;
@@ -15,6 +16,7 @@ class StaffController
 
     public function __construct(
         private \Illuminate\Contracts\Routing\ResponseFactory $responseFactory,
+        private StaffMapper $staffMapper,
     ) {
     }
 
@@ -53,9 +55,12 @@ class StaffController
     )]
     public function list(): PaginatedResponse
     {
-        return $this->paginate(Staff::query());
+        return $this->paginate(Staff::query(), $this->staffMapper);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     #[OA\Get(
         path: '/api/v1/staff/{staffId}',
         operationId: 'getStaffById',
@@ -79,9 +84,9 @@ class StaffController
             ),
         ],
     )]
-    public function get(Staff $staff): Staff
+    public function get(Staff $staff): array
     {
-        return $staff;
+        return $this->staffMapper->map($staff);
     }
 
     public function avatar(Staff $staff): \Illuminate\Http\Response

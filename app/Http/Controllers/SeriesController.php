@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Mappers\SeriesListItemMapper;
+use App\Http\Mappers\SeriesMapper;
 use App\Http\OpenApi\OpenApiSpec;
 use App\Http\Responses\PaginatedResponse;
 use App\Http\Responses\PaginatedResponseTrait;
@@ -18,7 +20,10 @@ class SeriesController
 
     public function __construct(
         private readonly Storage $storage,
-        private \Illuminate\Contracts\Routing\ResponseFactory $responseFactory,
+        private readonly \Illuminate\Contracts\Routing\ResponseFactory $responseFactory,
+        private readonly SeriesMapper $seriesMapper,
+        private readonly SeriesListItemMapper $seriesListItemMapper,
+        private readonly \Illuminate\Routing\UrlGenerator $urlGenerator,
     ) {
     }
 
@@ -57,11 +62,11 @@ class SeriesController
     )]
     public function list(): PaginatedResponse
     {
-        return $this->paginate(Serie::query());
+        return $this->paginate(Serie::query(), $this->seriesListItemMapper);
     }
 
     /**
-     * @return \Illuminate\Support\Collection<int, Serie>
+     * @return \Illuminate\Support\Collection<int, mixed>
      */
     #[OA\Get(
         path: '/api/v1/series/recentlyUpdated',
@@ -85,9 +90,13 @@ class SeriesController
         return Serie::query()
             ->orderBy('updated_at', 'desc')
             ->take(10)
-            ->get();
+            ->get()
+            ->map($this->seriesListItemMapper);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     #[OA\Get(
         path: '/api/v1/series/{serieId}',
         operationId: 'getSerieById',
@@ -111,9 +120,9 @@ class SeriesController
             ),
         ],
     )]
-    public function get(Serie $serie): Serie
+    public function get(Serie $serie): array
     {
-        return $serie->makeVisible(['genres', 'staff', 'blocked_fields']);
+        return $this->seriesMapper->map($serie);
     }
 
     /**
@@ -162,7 +171,7 @@ class SeriesController
     }
 
     /**
-     * @return \Illuminate\Support\Collection<(int|string), mixed>
+     * @return \Illuminate\Support\Collection<int, string>
      */
     #[OA\Get(
         path: '/api/v1/series/{serieId}/chapters/{chapterId}/pages',
@@ -199,7 +208,11 @@ class SeriesController
     )]
     public function pages(Serie $serie, Chapter $chapter): \Illuminate\Support\Collection
     {
-        return $chapter->pages()->orderBy('number')->get()->pluck('public_url');
+        return $chapter
+            ->pages()
+            ->orderBy('number')
+            ->get()
+            ->map(fn($x) => $this->urlGenerator->route('images.pages', ['page' => $x->id]));
     }
 
     public function page(Page $page): \Symfony\Component\HttpFoundation\StreamedResponse
