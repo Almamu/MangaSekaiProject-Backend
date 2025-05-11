@@ -2,6 +2,7 @@
 
 namespace App\Http\Mappers;
 
+use App\Http\OpenApi\PaginationSchema;
 use App\Models\Staff;
 use OpenApi\Attributes as OA;
 
@@ -40,6 +41,7 @@ use OpenApi\Attributes as OA;
         ),
     ],
 )]
+#[PaginationSchema(schema: 'StaffListPaginated', ref: '#/components/schemas/Staff')]
 class StaffMapper extends Mapper
 {
     public function __construct(
