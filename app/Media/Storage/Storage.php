@@ -31,8 +31,9 @@ class Storage
     public function __construct(
         private readonly array $handlers,
         private readonly Application $app,
-        private \Illuminate\Filesystem\FilesystemManager $filesystemManager,
-    ) {}
+        private readonly \Illuminate\Filesystem\FilesystemManager $filesystemManager,
+    ) {
+    }
 
     private function initialize(): void
     {
@@ -40,7 +41,8 @@ class Storage
             return;
         }
 
-        $this->instances = array_map(fn ($x) => $this->app->make($x), $this->handlers);
+        // @phpstan-ignore assign.propertyType (For some reason PHPStan doesn't properly detect types even tho they match)
+        $this->instances = array_map(fn($x) => $this->app->make($x), $this->handlers);
 
         /** @var array<array{uuid: string, config: array<string, mixed>}> $folders */
         $folders = Settings::getScannerDirs()->value;
@@ -72,7 +74,7 @@ class Storage
     {
         $this->initialize();
 
-        if (! ($path instanceof ParsedPath)) {
+        if (!($path instanceof ParsedPath)) {
             $path = $this->path($path);
         }
 
@@ -121,11 +123,11 @@ class Storage
         $path = array_shift($path);
 
         // remove the double forward slash
-        if (! is_null($container)) {
+        if (!is_null($container)) {
             $container = substr($container, 2);
         }
 
-        if (! is_null($path)) {
+        if (!is_null($path)) {
             // path points inside a container, return the appropiate object
             return new ParsedPath($disk, $container ?? '', $path);
         }

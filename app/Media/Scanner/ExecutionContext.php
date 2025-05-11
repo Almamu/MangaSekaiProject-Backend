@@ -9,6 +9,7 @@ class ExecutionContext
     public function __construct(
         public string $uuid,
         public Filesystem $filesystem,
-        public Scanner $scanner
-    ) {}
+        public Scanner $scanner,
+    ) {
+    }
 }

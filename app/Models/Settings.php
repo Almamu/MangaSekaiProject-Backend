@@ -33,18 +33,21 @@ class Settings extends Model
      */
     public static function getScannerDirs(): self
     {
-        return static::query()->firstOrCreate(
-            ['key' => 'scanner_dirs'],
-            ['value' => []]
-        );
+        return static::query()->firstOrCreate(['key' => 'scanner_dirs'], ['value' => []]);
     }
 
     /**
-     * @param  array<string, string>  $config
+     * @param array<string, string> $config
+     * @throws \Throwable
      */
     public static function addScannerDir(array $config): string
     {
         $uuid = uuid_create();
+
+        if (!is_string($uuid)) {
+            throw new \Exception('Failed to generate UUID');
+        }
+
         $setting = static::getScannerDirs();
         $setting->value = array_merge($setting->value, [['uuid' => $uuid, 'config' => $config]]);
         $setting->save();

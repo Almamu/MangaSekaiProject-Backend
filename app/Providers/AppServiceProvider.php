@@ -24,13 +24,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(ImageHandlerService::class, function (Application $app): \App\Services\ImageHandlerService {
-            $configRepository = $app->make(\Illuminate\Config\Repository::class);
-            /** @var string[] $config */
-            $config = $configRepository->get('media.mime_types');
+        $this->app->singleton(
+            ImageHandlerService::class,
+            function (Application $app): \App\Services\ImageHandlerService {
+                $configRepository = $app->make(\Illuminate\Config\Repository::class);
+                /** @var string[] $config */
+                $config = $configRepository->get('media.mime_types');
 
-            return new ImageHandlerService($config);
-        });
+                return new ImageHandlerService($config);
+            },
+        );
         $this->app->singleton(Storage::class, function (Application $app): \App\Media\Storage\Storage {
             $configRepository = $app->make(\Illuminate\Config\Repository::class);
             /** @var class-string<Handler>[] $config */
@@ -55,7 +58,7 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(Storage::class),
                 $app,
                 $app->make(\Illuminate\Log\LogManager::class),
-                $app->make(\Illuminate\Filesystem\FilesystemManager::class)
+                $app->make(\Illuminate\Filesystem\FilesystemManager::class),
             );
         });
     }

@@ -8,36 +8,128 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use OpenApi\Attributes as OA;
 
-#[OA\Schema(schema: 'Series', required: [
-    'id', 'name', 'chapter_count', 'pages_count', 'description',
-    'synced', 'image_url', 'genres', 'staff', 'created_at', 'updated_at',
-], properties: [
-    new OA\Property(property: 'id', type: 'integer'),
-    new OA\Property(property: 'name', type: 'string'),
-    new OA\Property(property: 'chapter_count', type: 'integer'),
-    new OA\Property(property: 'pages_count', type: 'integer'),
-    new OA\Property(property: 'description', type: 'string'),
-    new OA\Property(property: 'synced', type: 'boolean'),
-    new OA\Property(property: 'image_url', type: 'string', nullable: true),
-    new OA\Property(property: 'genres', type: 'array', items: new OA\Items(type: Genre::class)),
-    new OA\Property(property: 'staff', type: 'array', items: new OA\Items(ref: '#/components/schemas/StaffWithRole')),
-    new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
-    new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
-])]
-#[OA\Schema(schema: 'SeriesListItem', required: [
-    'id', 'name', 'chapter_count', 'pages_count', 'description',
-    'synced', 'image_url', 'created_at', 'updated_at',
-], properties: [
-    new OA\Property(property: 'id', type: 'integer'),
-    new OA\Property(property: 'name', type: 'string'),
-    new OA\Property(property: 'chapter_count', type: 'integer'),
-    new OA\Property(property: 'pages_count', type: 'integer'),
-    new OA\Property(property: 'description', type: 'string'),
-    new OA\Property(property: 'synced', type: 'boolean'),
-    new OA\Property(property: 'image_url', type: 'string', nullable: true),
-    new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
-    new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
-])]
+#[OA\Schema(
+    schema: 'Series',
+    required: [
+        'id',
+        'name',
+        'chapter_count',
+        'pages_count',
+        'description',
+        'synced',
+        'image_url',
+        'genres',
+        'staff',
+        'created_at',
+        'updated_at',
+    ],
+    properties: [
+        new OA\Property(
+            property: 'id',
+            type: 'integer',
+        ),
+        new OA\Property(
+            property: 'name',
+            type: 'string',
+        ),
+        new OA\Property(
+            property: 'chapter_count',
+            type: 'integer',
+        ),
+        new OA\Property(
+            property: 'pages_count',
+            type: 'integer',
+        ),
+        new OA\Property(
+            property: 'description',
+            type: 'string',
+        ),
+        new OA\Property(
+            property: 'synced',
+            type: 'boolean',
+        ),
+        new OA\Property(
+            property: 'image_url',
+            type: 'string',
+            nullable: true,
+        ),
+        new OA\Property(
+            property: 'genres',
+            type: 'array',
+            items: new OA\Items(type: Genre::class),
+        ),
+        new OA\Property(
+            property: 'staff',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/StaffWithRole'),
+        ),
+        new OA\Property(
+            property: 'created_at',
+            type: 'string',
+            format: 'date-time',
+        ),
+        new OA\Property(
+            property: 'updated_at',
+            type: 'string',
+            format: 'date-time',
+        ),
+    ],
+)]
+#[OA\Schema(
+    schema: 'SeriesListItem',
+    required: [
+        'id',
+        'name',
+        'chapter_count',
+        'pages_count',
+        'description',
+        'synced',
+        'image_url',
+        'created_at',
+        'updated_at',
+    ],
+    properties: [
+        new OA\Property(
+            property: 'id',
+            type: 'integer',
+        ),
+        new OA\Property(
+            property: 'name',
+            type: 'string',
+        ),
+        new OA\Property(
+            property: 'chapter_count',
+            type: 'integer',
+        ),
+        new OA\Property(
+            property: 'pages_count',
+            type: 'integer',
+        ),
+        new OA\Property(
+            property: 'description',
+            type: 'string',
+        ),
+        new OA\Property(
+            property: 'synced',
+            type: 'boolean',
+        ),
+        new OA\Property(
+            property: 'image_url',
+            type: 'string',
+            nullable: true,
+        ),
+        new OA\Property(
+            property: 'created_at',
+            type: 'string',
+            format: 'date-time',
+        ),
+        new OA\Property(
+            property: 'updated_at',
+            type: 'string',
+            format: 'date-time',
+        ),
+    ],
+)]
 #[PaginationSchema(schema: 'SeriesListPaginated', ref: '#/components/schemas/SeriesListItem')]
 /**
  * @mixin IdeHelperSerie
@@ -49,9 +141,20 @@ class Serie extends Model
 
     protected $hidden = ['image', 'mime_type', 'genres', 'staff', 'external_id', 'blocked_fields'];
 
-    protected $appends = ['image_url', 'genres', 'staff'];
+    protected $appends = ['image_url'];
 
-    protected $fillable = ['name', 'chapter_count', 'pages_count', 'description', 'image', 'mime_type', 'external_id', 'matcher', 'blocked_fields'];
+    protected $fillable = [
+        'name',
+        'chapter_count',
+        'pages_count',
+        'description',
+        'image',
+        'mime_type',
+        'external_id',
+        'matcher',
+        'synced',
+        'blocked_fields',
+    ];
 
     protected function casts(): array
     {
@@ -60,9 +163,9 @@ class Serie extends Model
         ];
     }
 
-    public function getImageUrlAttribute(): ?string
+    public function getImageUrlAttribute(): null|string
     {
-        if (! $this->hasImage()) {
+        if (!$this->hasImage()) {
             return null;
         }
 

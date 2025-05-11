@@ -16,8 +16,15 @@ class SeriesController
 {
     use PaginatedResponseTrait;
 
-    public function __construct(private readonly Storage $storage, private \Illuminate\Contracts\Routing\ResponseFactory $responseFactory) {}
+    public function __construct(
+        private readonly Storage $storage,
+        private \Illuminate\Contracts\Routing\ResponseFactory $responseFactory,
+    ) {
+    }
 
+    /**
+     * @return PaginatedResponse<Serie>
+     */
     #[OA\Get(
         path: '/api/v1/series',
         operationId: 'listSeries',
@@ -25,24 +32,32 @@ class SeriesController
         security: OpenApiSpec::SECURITY,
         tags: ['series'],
         parameters: [
-            new OA\Parameter(name: 'page', description: 'Page number', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
-            new OA\Parameter(name: 'perPage', description: 'Number of items per page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(
+                name: 'page',
+                description: 'Page number',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+            new OA\Parameter(
+                name: 'perPage',
+                description: 'Number of items per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer'),
+            ),
         ],
         responses: [
             new OA\Response(
                 response: 200,
                 description: 'List of series',
-                content: new OA\JsonContent(
-                    ref: '#/components/schemas/SeriesListPaginated',
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/SeriesListPaginated'),
             ),
-        ]
+        ],
     )]
     public function list(): PaginatedResponse
     {
-        return $this->paginate(
-            Serie::query()
-        );
+        return $this->paginate(Serie::query());
     }
 
     /**
@@ -61,13 +76,16 @@ class SeriesController
                 content: new OA\JsonContent(
                     type: 'array',
                     items: new OA\Items(ref: '#/components/schemas/SeriesListItem'),
-                )
+                ),
             ),
-        ]
+        ],
     )]
     public function recentlyUpdated(): \Illuminate\Support\Collection
     {
-        return Serie::query()->orderBy('updated_at', 'desc')->take(10)->get();
+        return Serie::query()
+            ->orderBy('updated_at', 'desc')
+            ->take(10)
+            ->get();
     }
 
     #[OA\Get(
@@ -77,23 +95,30 @@ class SeriesController
         security: OpenApiSpec::SECURITY,
         tags: ['series'],
         parameters: [
-            new OA\Parameter(name: 'serieId', description: 'Serie ID', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(
+                name: 'serieId',
+                description: 'Serie ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
         ],
         responses: [
             new OA\Response(
                 response: 200,
                 description: 'Series information',
-                content: new OA\JsonContent(
-                    ref: '#/components/schemas/Series'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/Series'),
             ),
-        ]
+        ],
     )]
     public function get(Serie $serie): Serie
     {
         return $serie->makeVisible(['genres', 'staff', 'blocked_fields']);
     }
 
+    /**
+     * @return PaginatedResponse<Chapter>
+     */
     #[OA\Get(
         path: '/api/v1/series/{serieId}/chapters',
         operationId: 'getChaptersForSeries',
@@ -101,27 +126,39 @@ class SeriesController
         security: OpenApiSpec::SECURITY,
         tags: ['series'],
         parameters: [
-            new OA\Parameter(name: 'serieId', description: 'Serie ID', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
-            new OA\Parameter(name: 'page', description: 'Page number', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
-            new OA\Parameter(name: 'perPage', description: 'Number of items per page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(
+                name: 'serieId',
+                description: 'Serie ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+            new OA\Parameter(
+                name: 'page',
+                description: 'Page number',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+            new OA\Parameter(
+                name: 'perPage',
+                description: 'Number of items per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer'),
+            ),
         ],
         responses: [
             new OA\Response(
                 response: 200,
                 description: 'Chapter information',
-                content: new OA\JsonContent(
-                    ref: '#/components/schemas/ChapterListPaginated',
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/ChapterListPaginated'),
             ),
-        ]
+        ],
     )]
     public function chapters(Serie $serie, \Illuminate\Http\Request $request): PaginatedResponse
     {
-        $perPage = $request->integer('perPage', OpenApiSpec::RECORDS_PER_PAGE);
-        $page = $request->integer('page', 1);
-        $pagination = $serie->chapters()->orderBy('number')->paginate($perPage, page: $page);
-
-        return new PaginatedResponse($pagination);
+        return $this->paginate($serie->chapters()->orderBy('number')->getQuery());
     }
 
     /**
@@ -134,8 +171,20 @@ class SeriesController
         security: OpenApiSpec::SECURITY,
         tags: ['series'],
         parameters: [
-            new OA\Parameter(name: 'serieId', description: 'Serie ID', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
-            new OA\Parameter(name: 'chapterId', description: 'Chapter ID', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(
+                name: 'serieId',
+                description: 'Serie ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+            new OA\Parameter(
+                name: 'chapterId',
+                description: 'Chapter ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
         ],
         responses: [
             new OA\Response(
@@ -144,9 +193,9 @@ class SeriesController
                 content: new OA\JsonContent(
                     type: 'array',
                     items: new OA\Items(type: 'string'),
-                )
+                ),
             ),
-        ]
+        ],
     )]
     public function pages(Serie $serie, Chapter $chapter): \Illuminate\Support\Collection
     {
@@ -155,23 +204,27 @@ class SeriesController
 
     public function page(Page $page): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        return $this->responseFactory->stream(function () use ($page): void {
-            // read the file in blocks of 4096 bytes and output it to the client
-            $this->storage->open($page->path, function ($stream): void {
-                while (feof($stream) === false) {
-                    echo fread($stream, 8192);
-                    ob_flush();
-                    flush();
-                }
-            });
-        }, 200, [
-            'Content-Type' => $page->mime_type,
-        ]);
+        return $this->responseFactory->stream(
+            function () use ($page): void {
+                // read the file in blocks of 4096 bytes and output it to the client
+                $this->storage->open($page->path, function ($stream): void {
+                    while (feof($stream) === false) {
+                        echo fread($stream, 8192);
+                        ob_flush();
+                        flush();
+                    }
+                });
+            },
+            200,
+            [
+                'Content-Type' => $page->mime_type,
+            ],
+        );
     }
 
     public function cover(Serie $serie): \Illuminate\Http\Response
     {
-        if (! $serie->hasImage()) {
+        if (!$serie->hasImage()) {
             return $this->responseFactory->make(status: 404);
         }
 

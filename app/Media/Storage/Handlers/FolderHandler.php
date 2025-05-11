@@ -8,7 +8,10 @@ use App\Media\Storage\Storage;
 
 readonly class FolderHandler implements Handler
 {
-    public function __construct(private Storage $storage) {}
+    public function __construct(
+        private Storage $storage,
+    ) {
+    }
 
     public function providable(ParsedPath $path): bool
     {

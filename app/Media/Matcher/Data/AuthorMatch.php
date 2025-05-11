@@ -10,5 +10,6 @@ class AuthorMatch
         public string $name,
         public string $image,
         public string $description,
-    ) {}
+    ) {
+    }
 }

@@ -1,6 +1,6 @@
 all: lint
 
-lint: pint phpstan
+lint: formatcheck phpstan rector
 
 serve:
 	@composer dump-autoload
@@ -13,11 +13,14 @@ composer:
 phpstan:
 	@vendor/bin/phpstan --ansi analyse --no-progress --memory-limit=-1 -c phpstan.neon --autoload-file=vendor/autoload.php
 
-pint:
-	@./vendor/bin/pint --test -v
+rector:
+	@vendor/bin/rector --dry-run
+
+formatcheck:
+	@./vendor/bin/mago format --dry-run
 
 format:
-	@./vendor/bin/pint
+	@./vendor/bin/mago format
 
 cache:
 	@php artisan cache:clear

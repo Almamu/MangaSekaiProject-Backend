@@ -19,7 +19,7 @@ class Page extends Model
 
     public $timestamps = false;
 
-    public function getPublicUrlAttribute(): ?string
+    public function getPublicUrlAttribute(): null|string
     {
         return route('images.pages', ['page' => $this->id]);
     }

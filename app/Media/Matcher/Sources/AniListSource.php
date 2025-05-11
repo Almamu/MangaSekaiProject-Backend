@@ -3,6 +3,7 @@
 namespace App\Media\Matcher\Sources;
 
 use App\Media\Matcher\Data\AuthorMatch;
+use App\Media\Matcher\Data\SeriesMatch;
 use Illuminate\Support\Facades\Http;
 
 class AniListSource implements Source
@@ -94,94 +95,156 @@ query (
             'query' => self::MATCH_REQUEST,
         ];
 
-        $response = Http::acceptJson()->asJson()->post(self::ANILIST_URL, $request);
-        $result = $response->json();
+        try {
+            $response = Http::acceptJson()->asJson()->post(self::ANILIST_URL, $request);
 
-        $resultList = [];
+            if ($response->failed()) {
+                \Log::warning('HTTP request failed.', [
+                    'status' => $response->status(),
+                    'response' => $response->body(),
+                ]);
+                return [];
+            }
 
-        if (! is_array($result) || ! array_key_exists('data', $result)) {
+            $result = $response->json();
+        } catch (\Exception $e) {
+            \Log::error('Error occurred during HTTP request.', ['exception' => $e->getMessage()]);
             return [];
         }
 
-        if (! is_array($result['data']) || ! array_key_exists('MANGA', $result['data'])) {
+        if (!is_array($result) || !isset($result['data'])) {
+            \Log::warning('The API response does not contain the "data" key.', ['response' => $result]);
             return [];
         }
 
-        $series = $result['data']['MANGA'];
+        if (!is_array($result['data']) || !isset($result['data']['MANGA'])) {
+            \Log::warning('The "data.MANGA" key is missing or has an unexpected format.', ['response' => $result]);
+            return [];
+        }
+
+        try {
+            return [$this->buildSeries($result['data']['MANGA'])];
+        } catch (\Exception $e) {
+            \Log::error('Error occurred during series data parsing.', ['exception' => $e->getMessage()]);
+            return [];
+        }
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function buildSeries(mixed $series): SeriesMatch
+    {
+        if (
+            !is_array($series) ||
+                !is_int($series['id']) ||
+                !is_array($series['startDate']) ||
+                !is_array($series['title']) ||
+                !is_int($series['averageScore']) ||
+                !is_string($series['title']['userPreferred'])
+        ) {
+            throw new \Exception('Invalid series data.');
+        }
+
         $authors = [];
+        $genres = [];
+        $coverImage = '';
+        $description = '';
 
-        if (! is_array($series)) {
-            return [];
+        if (array_key_exists('staff', $series) && is_array($series['staff']) && is_array($series['staff']['edges'])) {
+            $authors = $this->buildAuthors($series['staff']['edges']);
         }
 
-        if (array_key_exists('staff', $series) && is_array($series['staff']) && array_key_exists('edges', $series['staff'])) {
-            foreach ($series['staff']['edges'] as $staff) {
-                if (! is_array($staff)) {
+        if (array_key_exists('description', $series) && is_string($series['description'])) {
+            $description = $series['description'];
+        }
+
+        if (is_array($series['coverImage']) && is_string($series['coverImage']['large'])) {
+            $coverImage = $series['coverImage']['large'];
+        }
+
+        if (is_array($series['genres'])) {
+            foreach ($series['genres'] as $genre) {
+                if (!is_string($genre)) {
                     continue;
                 }
 
-                if (! array_key_exists('node', $staff)) {
-                    continue;
-                }
-
-                if (! is_array($staff['node'])) {
-                    continue;
-                }
-
-                if (! array_key_exists('name', $staff['node'])) {
-                    continue;
-                }
-
-                if (! is_array($staff['node']['name'])) {
-                    continue;
-                }
-
-                if (! array_key_exists('full', $staff['node']['name'])) {
-                    continue;
-                }
-
-                if (! array_key_exists('role', $staff)) {
-                    continue;
-                }
-
-                if (! array_key_exists('id', $staff)) {
-                    continue;
-                }
-
-                if (! is_int($staff['id'])) {
-                    continue;
-                }
-
-                $authors[] = new AuthorMatch(
-                    $staff['id'],
-                    $staff['role'],
-                    $staff['node']['name']['full'],
-                    $staff['node']['image']['large'],
-                    $staff['node']['description'] ?? '',
-                );
+                $genres[] = $genre;
             }
         }
 
-        $startDate = $series['startDate']['year'].'/'.$series['startDate']['month'].'/'.$series['startDate']['day'];
-        $endDate = '';
+        $startDate = $this->formatDate($series['startDate']);
+        $endDate = $this->formatDate($series['endDate'] ?? []);
 
-        if (! is_null($series['endDate']['year'])) {
-            $endDate = $series['endDate']['year'].'/'.$series['endDate']['month'].'/'.$series['endDate']['day'];
-        }
-
-        $resultList[] = new \App\Media\Matcher\Data\SeriesMatch(
+        return new \App\Media\Matcher\Data\SeriesMatch(
             $series['id'],
             self::MATCHER_NAME,
             $series['title']['userPreferred'],
-            $series['coverImage']['large'] ?? '',
-            $series['description'] ?? '',
-            $series['genres'] ?? [],
-            $series['averageScore'] ?? 0,
+            $coverImage,
+            $description,
+            $genres,
+            $series['averageScore'],
             $startDate,
             $endDate,
-            $authors
+            $authors,
         );
+    }
 
-        return $resultList;
+    /**
+     * @param array<mixed,mixed> $staffEdges
+     *
+     * @return AuthorMatch[]
+     */
+    private function buildAuthors(array $staffEdges): array
+    {
+        $authors = [];
+
+        foreach ($staffEdges as $staff) {
+            $author = $this->parseAuthor($staff);
+            if ($author !== null) {
+                $authors[] = $author;
+            }
+        }
+
+        return $authors;
+    }
+
+    private function parseAuthor(mixed $staff): null|AuthorMatch
+    {
+        if (
+            !is_array($staff) ||
+                !is_int($staff['id']) ||
+                !is_string($staff['role']) ||
+                !is_array($staff['node']) ||
+                !is_array($staff['node']['name']) ||
+                !is_array($staff['node']['image']) ||
+                !is_string($staff['node']['name']['full']) ||
+                !is_string($staff['node']['image']['large'])
+        ) {
+            return null;
+        }
+
+        $description = '';
+
+        if (array_key_exists('description', $staff['node']) && is_string($staff['node']['description'])) {
+            $description = $staff['node']['description'];
+        }
+
+        return new AuthorMatch(
+            $staff['id'],
+            $staff['role'],
+            $staff['node']['name']['full'],
+            $staff['node']['image']['large'],
+            $description,
+        );
+    }
+
+    private function formatDate(mixed $date): string
+    {
+        if (is_array($date) && is_int($date['year']) && is_int($date['month']) && is_int($date['day'])) {
+            return "{$date['year']}/{$date['month']}/{$date['day']}";
+        }
+
+        return '';
     }
 }

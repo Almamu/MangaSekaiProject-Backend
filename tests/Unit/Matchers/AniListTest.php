@@ -14,11 +14,11 @@ class AniListTest extends TestCase
             AniListSource::ANILIST_URL => Http::response(
                 file_get_contents(base_path('tests/Fixtures/anilist/bakuman.json')) ?: '',
                 200,
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => 'application/json'],
             ),
         ]);
 
-        $matcher = new AniListSource;
+        $matcher = new AniListSource();
         $result = $matcher->match('Bakuman');
 
         $this->assertIsArray($result);
@@ -29,7 +29,7 @@ class AniListTest extends TestCase
         $this->assertIsObject($value);
 
         $this->assertCount(4, $value->genres);
-        $this->assertCount(8, $value->extrainfo);
+        $this->assertCount(8, $value->authors);
     }
 
     public function test_failed_match(): void
@@ -38,11 +38,11 @@ class AniListTest extends TestCase
             AniListSource::ANILIST_URL => Http::response(
                 file_get_contents(base_path('tests/Fixtures/anilist/failed-no-match.json')) ?: '',
                 200,
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => 'application/json'],
             ),
         ]);
 
-        $matcher = new AniListSource;
+        $matcher = new AniListSource();
         $result = $matcher->match('Bakuman');
 
         $this->assertIsArray($result);
@@ -52,14 +52,10 @@ class AniListTest extends TestCase
     public function test_failed_response(): void
     {
         Http::fake([
-            AniListSource::ANILIST_URL => Http::response(
-                '',
-                200,
-                ['Content-Type' => 'application/json']
-            ),
+            AniListSource::ANILIST_URL => Http::response('', 200, ['Content-Type' => 'application/json']),
         ]);
 
-        $matcher = new AniListSource;
+        $matcher = new AniListSource();
         $result = $matcher->match('Bakuman');
 
         $this->assertIsArray($result);
@@ -72,11 +68,11 @@ class AniListTest extends TestCase
             AniListSource::ANILIST_URL => Http::response(
                 file_get_contents(base_path('tests/Fixtures/anilist/failed-no-data.json')) ?: '',
                 200,
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => 'application/json'],
             ),
         ]);
 
-        $matcher = new AniListSource;
+        $matcher = new AniListSource();
         $result = $matcher->match('Bakuman');
 
         $this->assertIsArray($result);
@@ -89,11 +85,11 @@ class AniListTest extends TestCase
             AniListSource::ANILIST_URL => Http::response(
                 file_get_contents(base_path('tests/Fixtures/anilist/failed-no-manga-data.json')) ?: '',
                 200,
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => 'application/json'],
             ),
         ]);
 
-        $matcher = new AniListSource;
+        $matcher = new AniListSource();
         $result = $matcher->match('Bakuman');
 
         $this->assertIsArray($result);
@@ -106,11 +102,11 @@ class AniListTest extends TestCase
             AniListSource::ANILIST_URL => Http::response(
                 file_get_contents(base_path('tests/Fixtures/anilist/failed-no-manga-data-object.json')) ?: '',
                 200,
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => 'application/json'],
             ),
         ]);
 
-        $matcher = new AniListSource;
+        $matcher = new AniListSource();
         $result = $matcher->match('Bakuman');
 
         $this->assertIsArray($result);
@@ -123,11 +119,11 @@ class AniListTest extends TestCase
             AniListSource::ANILIST_URL => Http::response(
                 file_get_contents(base_path('tests/Fixtures/anilist/bakuman-without-staff.json')) ?: '',
                 200,
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => 'application/json'],
             ),
         ]);
 
-        $matcher = new AniListSource;
+        $matcher = new AniListSource();
         $result = $matcher->match('Bakuman');
 
         $this->assertIsArray($result);
@@ -138,7 +134,7 @@ class AniListTest extends TestCase
         $this->assertIsObject($value);
 
         $this->assertCount(4, $value->genres);
-        $this->assertCount(0, $value->extrainfo);
+        $this->assertCount(0, $value->authors);
     }
 
     public function test_success_malformed_staff_data(): void
@@ -147,11 +143,11 @@ class AniListTest extends TestCase
             AniListSource::ANILIST_URL => Http::response(
                 file_get_contents(base_path('tests/Fixtures/anilist/bakuman-staff-malformed.json')) ?: '',
                 200,
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => 'application/json'],
             ),
         ]);
 
-        $matcher = new AniListSource;
+        $matcher = new AniListSource();
         $result = $matcher->match('Bakuman');
 
         $this->assertIsArray($result);
@@ -162,7 +158,7 @@ class AniListTest extends TestCase
         $this->assertIsObject($value);
 
         $this->assertCount(4, $value->genres);
-        $this->assertCount(0, $value->extrainfo);
+        $this->assertCount(0, $value->authors);
     }
 
     public function test_success_malformed_staff_data_2(): void
@@ -171,11 +167,11 @@ class AniListTest extends TestCase
             AniListSource::ANILIST_URL => Http::response(
                 file_get_contents(base_path('tests/Fixtures/anilist/bakuman-staff-malformed-2.json')) ?: '',
                 200,
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => 'application/json'],
             ),
         ]);
 
-        $matcher = new AniListSource;
+        $matcher = new AniListSource();
         $result = $matcher->match('Bakuman');
 
         $this->assertIsArray($result);
@@ -186,7 +182,7 @@ class AniListTest extends TestCase
         $this->assertIsObject($value);
 
         $this->assertCount(4, $value->genres);
-        $this->assertCount(0, $value->extrainfo);
+        $this->assertCount(0, $value->authors);
     }
 
     public function test_success_malformed_staff_data_3(): void
@@ -195,11 +191,11 @@ class AniListTest extends TestCase
             AniListSource::ANILIST_URL => Http::response(
                 file_get_contents(base_path('tests/Fixtures/anilist/bakuman-staff-malformed-3.json')) ?: '',
                 200,
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => 'application/json'],
             ),
         ]);
 
-        $matcher = new AniListSource;
+        $matcher = new AniListSource();
         $result = $matcher->match('Bakuman');
 
         $this->assertIsArray($result);
@@ -210,7 +206,7 @@ class AniListTest extends TestCase
         $this->assertIsObject($value);
 
         $this->assertCount(4, $value->genres);
-        $this->assertCount(0, $value->extrainfo);
+        $this->assertCount(0, $value->authors);
     }
 
     public function test_success_malformed_staff_data_4(): void
@@ -219,11 +215,11 @@ class AniListTest extends TestCase
             AniListSource::ANILIST_URL => Http::response(
                 file_get_contents(base_path('tests/Fixtures/anilist/bakuman-staff-malformed-4.json')) ?: '',
                 200,
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => 'application/json'],
             ),
         ]);
 
-        $matcher = new AniListSource;
+        $matcher = new AniListSource();
         $result = $matcher->match('Bakuman');
 
         $this->assertIsArray($result);
@@ -234,6 +230,6 @@ class AniListTest extends TestCase
         $this->assertIsObject($value);
 
         $this->assertCount(4, $value->genres);
-        $this->assertCount(0, $value->extrainfo);
+        $this->assertCount(0, $value->authors);
     }
 }

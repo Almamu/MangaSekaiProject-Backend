@@ -24,6 +24,7 @@ class SeriesMatch
         /** @var string End date */
         public string $end,
         /** @var AuthorMatch[] Extra info for the matcher that found this manga */
-        public array $extrainfo,
-    ) {}
+        public array $authors,
+    ) {
+    }
 }

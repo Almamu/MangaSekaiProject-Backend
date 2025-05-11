@@ -29,19 +29,27 @@ class AuthenticationTest extends TestCase
 
         $token = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll(['token', 'token_type', 'expires_in']))
+            ->assertJson(fn(AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll([
+                'token',
+                'token_type',
+                'expires_in',
+            ]))
             ->json('token');
 
         // refresh current token
-        $response = $this->post('/api/v1/auth/refresh', headers: ['Authorization' => 'Bearer '.$token]);
+        $response = $this->post('/api/v1/auth/refresh', headers: ['Authorization' => 'Bearer ' . $token]);
 
         $token = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll(['token', 'token_type', 'expires_in']))
+            ->assertJson(fn(AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll([
+                'token',
+                'token_type',
+                'expires_in',
+            ]))
             ->json('token');
 
         // finally logout
-        $response = $this->post('/api/v1/auth/logout', headers: ['Authorization' => 'Bearer '.$token]);
+        $response = $this->post('/api/v1/auth/logout', headers: ['Authorization' => 'Bearer ' . $token]);
 
         $response->assertStatus(200);
     }

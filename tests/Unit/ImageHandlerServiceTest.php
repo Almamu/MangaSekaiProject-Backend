@@ -12,7 +12,7 @@ class ImageHandlerServiceTest extends TestCase
      */
     public function test_extensionless_file(): void
     {
-        $imageHandler = new ImageHandlerService;
+        $imageHandler = new ImageHandlerService();
 
         $mime = $imageHandler->guessMimeType('filename-without-extension');
         $this->assertEquals('application/octet-stream', $mime);
@@ -20,7 +20,7 @@ class ImageHandlerServiceTest extends TestCase
 
     public function test_unknown_extension(): void
     {
-        $imageHandler = new ImageHandlerService;
+        $imageHandler = new ImageHandlerService();
 
         $mime = $imageHandler->guessMimeType('filename.with-weird-extension');
         $this->assertEquals('application/octet-stream', $mime);

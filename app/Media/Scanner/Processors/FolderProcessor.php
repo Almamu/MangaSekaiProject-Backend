@@ -8,9 +8,12 @@ use App\Models\PagesScan;
 use App\Models\SeriesScan;
 use App\Services\ImageHandlerService;
 
-class FolderProcessor implements Processor
+readonly class FolderProcessor implements Processor
 {
-    public function __construct(private readonly ImageHandlerService $imageHandler) {}
+    public function __construct(
+        private ImageHandlerService $imageHandler,
+    ) {
+    }
 
     public function processable(ExecutionContext $context, string $path = ''): bool
     {
@@ -68,7 +71,7 @@ class FolderProcessor implements Processor
 
             $mimeType = $this->imageHandler->guessMimeType($file);
 
-            if (! $this->imageHandler->isMimeTypeSupported($mimeType)) {
+            if (!$this->imageHandler->isMimeTypeSupported($mimeType)) {
                 fclose($stream);
 
                 continue;
@@ -76,7 +79,7 @@ class FolderProcessor implements Processor
 
             PagesScan::updateOrInsert(
                 ['chapters_scan_id' => $chapter->id, 'path' => $file],
-                ['mime_type' => $mimeType]
+                ['mime_type' => $mimeType],
             );
 
             fclose($stream);

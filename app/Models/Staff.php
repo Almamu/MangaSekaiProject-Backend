@@ -8,24 +8,76 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use OpenApi\Attributes as OA;
 
-#[OA\Schema(required: ['id', 'name', 'description', 'image_url', 'created_at', 'updated_at'], properties: [
-    new OA\Property(property: 'id', type: 'integer'),
-    new OA\Property(property: 'name', type: 'string'),
-    new OA\Property(property: 'description', type: 'string'),
-    new OA\Property(property: 'image_url', type: 'string'),
-    new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
-    new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
-])]
-#[OA\Schema(schema: 'StaffWithRole', required: [
-    'id', 'name', 'description', 'image_url', 'created_at', 'updated_at',
-], properties: [
-    new OA\Property(property: 'id', type: 'integer'),
-    new OA\Property(property: 'name', type: 'string'),
-    new OA\Property(property: 'description', type: 'string'),
-    new OA\Property(property: 'image_url', type: 'string'),
-    new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
-    new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
-])]
+#[OA\Schema(
+    required: ['id', 'name', 'description', 'image_url', 'created_at', 'updated_at'],
+    properties: [
+        new OA\Property(
+            property: 'id',
+            type: 'integer',
+        ),
+        new OA\Property(
+            property: 'name',
+            type: 'string',
+        ),
+        new OA\Property(
+            property: 'description',
+            type: 'string',
+        ),
+        new OA\Property(
+            property: 'image_url',
+            type: 'string',
+        ),
+        new OA\Property(
+            property: 'created_at',
+            type: 'string',
+            format: 'date-time',
+        ),
+        new OA\Property(
+            property: 'updated_at',
+            type: 'string',
+            format: 'date-time',
+        ),
+    ],
+)]
+#[OA\Schema(
+    schema: 'StaffWithRole',
+    required: [
+        'id',
+        'name',
+        'description',
+        'image_url',
+        'created_at',
+        'updated_at',
+    ],
+    properties: [
+        new OA\Property(
+            property: 'id',
+            type: 'integer',
+        ),
+        new OA\Property(
+            property: 'name',
+            type: 'string',
+        ),
+        new OA\Property(
+            property: 'description',
+            type: 'string',
+        ),
+        new OA\Property(
+            property: 'image_url',
+            type: 'string',
+        ),
+        new OA\Property(
+            property: 'created_at',
+            type: 'string',
+            format: 'date-time',
+        ),
+        new OA\Property(
+            property: 'updated_at',
+            type: 'string',
+            format: 'date-time',
+        ),
+    ],
+)]
 #[PaginationSchema(schema: 'StaffListPaginated', type: Staff::class)]
 /**
  * @mixin IdeHelperStaff
@@ -41,9 +93,9 @@ class Staff extends Model
 
     protected $appends = ['image_url'];
 
-    public function getImageUrlAttribute(): ?string
+    public function getImageUrlAttribute(): null|string
     {
-        if (! $this->hasImage()) {
+        if (!$this->hasImage()) {
             return null;
         }
 

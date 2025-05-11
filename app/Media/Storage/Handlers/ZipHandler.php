@@ -8,7 +8,10 @@ use App\Media\Storage\Storage;
 
 readonly class ZipHandler implements Handler
 {
-    public function __construct(private Storage $storage) {}
+    public function __construct(
+        private Storage $storage,
+    ) {
+    }
 
     public function providable(ParsedPath $path): bool
     {
@@ -30,7 +33,7 @@ readonly class ZipHandler implements Handler
         throw_if(is_null($stream), new CannotReadFileException($path));
 
         // open the zip file
-        $zip = new \PhpZip\ZipFile;
+        $zip = new \PhpZip\ZipFile();
         $zip->openFromStream($stream);
 
         $entry = $zip->getEntry($path->path);

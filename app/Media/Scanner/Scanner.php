@@ -28,10 +28,11 @@ class Scanner
         private readonly array $processors,
         private readonly Storage $storage,
         Application $app,
-        private \Illuminate\Log\LogManager $logManager,
-        private \Illuminate\Filesystem\FilesystemManager $filesystemManager,
+        private readonly \Illuminate\Log\LogManager $logManager,
+        private readonly \Illuminate\Filesystem\FilesystemManager $filesystemManager,
     ) {
-        $this->instances = array_map(fn (string $class) => $app->make($class), $this->processors);
+        // @phpstan-ignore assign.propertyType (For some reason PHPStan doesn't properly detect types even tho they match)
+        $this->instances = array_map(fn(string $class) => $app->make($class), $this->processors);
     }
 
     /**
@@ -46,7 +47,7 @@ class Scanner
     public function scan(callable $serieCallback, callable $chapterCallback, callable $pageCallback): void
     {
         foreach ($this->storage->getDisks() as $storage) {
-            $this->logManager->info('Scanning storage '.$storage.' for new manga');
+            $this->logManager->info('Scanning storage ' . $storage . ' for new manga');
 
             $context = new ExecutionContext($storage, $this->filesystemManager->disk($storage), $this);
 
@@ -59,16 +60,26 @@ class Scanner
         // go through every series and remove the ones we do not find in processors anymore
         SeriesScan::query()->chunk(100, function ($series) use ($serieCallback): void {
             foreach ($series as $serie) {
-                $context = new ExecutionContext($serie->library_id, $this->filesystemManager->disk($serie->library_id), $this);
+                $context = new ExecutionContext(
+                    $serie->library_id,
+                    $this->filesystemManager->disk($serie->library_id),
+                    $this,
+                );
 
-                $this->logManager->info('Processing '.$serie->library_id.'://'.$serie->basepath);
+                $this->logManager->info('Processing ' . $serie->library_id . '://' . $serie->basepath);
 
                 if ($this->processSeries($context, $serie)) {
                     $serieCallback($serie);
                 } else {
                     // not processable, remove from the database
-                    if (! is_null($serie->serie_id)) {
-                        $this->logManager->info('Deleting '.$serie->library_id.'://'.$serie->basepath.' association on the database');
+                    if (!is_null($serie->serie_id)) {
+                        $this->logManager->info(
+                            'Deleting ' .
+                            $serie->library_id .
+                                '://' .
+                                $serie->basepath .
+                                ' association on the database',
+                        );
                     }
 
                     $serie->delete();
@@ -81,23 +92,22 @@ class Scanner
 
         // finally go through every chapter scanned
         // and create the corresponding records in the database
-        ChaptersScan::with('serie')
-            ->chunk(100, function ($chapters) use ($chapterCallback): void {
-                foreach ($chapters as $chapter) {
-                    $library_id = $chapter->serie->library_id;
-                    $context = new ExecutionContext($library_id, $this->filesystemManager->disk($library_id), $this);
+        ChaptersScan::with('serie')->chunk(100, function ($chapters) use ($chapterCallback): void {
+            foreach ($chapters as $chapter) {
+                $library_id = $chapter->serie->library_id;
+                $context = new ExecutionContext($library_id, $this->filesystemManager->disk($library_id), $this);
 
-                    $this->logManager->info('Processing '.$chapter->basepath.' on library '.$library_id);
+                $this->logManager->info('Processing ' . $chapter->basepath . ' on library ' . $library_id);
 
-                    if ($this->processChapter($context, $chapter)) {
-                        $chapterCallback($chapter);
-                    } else {
-                        // chapter could not be processed, that means whatever was supporting it is not there
-                        // (either a file/folder went missing or the processor is not supporting it anymore)
-                        $chapter->delete();
-                    }
+                if ($this->processChapter($context, $chapter)) {
+                    $chapterCallback($chapter);
+                } else {
+                    // chapter could not be processed, that means whatever was supporting it is not there
+                    // (either a file/folder went missing or the processor is not supporting it anymore)
+                    $chapter->delete();
                 }
-            });
+            }
+        });
 
         // same applies for chapters, the ones that do not have a chapter scan can be removed
         Chapter::whereNotIn('id', ChaptersScan::query()->select('chapter_id'))->delete();
@@ -122,7 +132,7 @@ class Scanner
     public function process(ExecutionContext $context): bool
     {
         foreach ($this->instances as $processor) {
-            if (! $processor->processable($context, '/')) {
+            if (!$processor->processable($context, '/')) {
                 continue;
             }
 
@@ -131,7 +141,9 @@ class Scanner
             }
         }
 
-        $this->logManager->error('Could not process the filesystem '.$context->uuid.': no suitable processor found');
+        $this->logManager->error(
+            'Could not process the filesystem ' . $context->uuid . ': no suitable processor found',
+        );
 
         return false;
     }
@@ -139,7 +151,7 @@ class Scanner
     public function processSeries(ExecutionContext $context, SeriesScan $serie): bool
     {
         foreach ($this->instances as $processor) {
-            if (! $processor->processable($context, $serie->basepath)) {
+            if (!$processor->processable($context, $serie->basepath)) {
                 continue;
             }
 
@@ -148,7 +160,7 @@ class Scanner
             }
         }
 
-        $this->logManager->error('Could not process series on '.$context->uuid.'://'.$serie->basepath);
+        $this->logManager->error('Could not process series on ' . $context->uuid . '://' . $serie->basepath);
 
         return false;
     }
@@ -156,7 +168,7 @@ class Scanner
     public function processChapter(ExecutionContext $context, ChaptersScan $chapter): bool
     {
         foreach ($this->instances as $processor) {
-            if (! $processor->processable($context, $chapter->basepath)) {
+            if (!$processor->processable($context, $chapter->basepath)) {
                 continue;
             }
 
@@ -165,7 +177,7 @@ class Scanner
             }
         }
 
-        $this->logManager->error('Could not process chapters on '.$context->uuid.'://'.$chapter->basepath);
+        $this->logManager->error('Could not process chapters on ' . $context->uuid . '://' . $chapter->basepath);
 
         return false;
     }
@@ -173,7 +185,7 @@ class Scanner
     public function processPage(ExecutionContext $context, PagesScan $page): bool
     {
         foreach ($this->instances as $processor) {
-            if (! $processor->processable($context, $page->path)) {
+            if (!$processor->processable($context, $page->path)) {
                 continue;
             }
 
@@ -182,7 +194,7 @@ class Scanner
             }
         }
 
-        $this->logManager->error('Could not process pages on '.$context->uuid.'://'.$page->path);
+        $this->logManager->error('Could not process pages on ' . $context->uuid . '://' . $page->path);
 
         return false;
     }

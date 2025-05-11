@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\OpenApi\OpenApiSpec;
+use App\Http\Responses\PaginatedResponse;
 use App\Http\Responses\PaginatedResponseTrait;
 use App\Models\Staff;
 use OpenApi\Attributes as OA;
@@ -12,8 +13,14 @@ class StaffController
 {
     use PaginatedResponseTrait;
 
-    public function __construct(private \Illuminate\Contracts\Routing\ResponseFactory $responseFactory) {}
+    public function __construct(
+        private \Illuminate\Contracts\Routing\ResponseFactory $responseFactory,
+    ) {
+    }
 
+    /**
+     * @return PaginatedResponse<Staff>
+     */
     #[OA\Get(
         path: '/api/v1/staff',
         operationId: 'listStaff',
@@ -21,24 +28,32 @@ class StaffController
         security: OpenApiSpec::SECURITY,
         tags: ['staff'],
         parameters: [
-            new OA\Parameter(name: 'page', description: 'Page number', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
-            new OA\Parameter(name: 'perPage', description: 'Number of items per page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(
+                name: 'page',
+                description: 'Page number',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+            new OA\Parameter(
+                name: 'perPage',
+                description: 'Number of items per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer'),
+            ),
         ],
         responses: [
             new OA\Response(
                 response: 200,
                 description: 'List of staff members',
-                content: new OA\JsonContent(
-                    ref: '#/components/schemas/StaffListPaginated',
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/StaffListPaginated'),
             ),
-        ]
+        ],
     )]
-    public function list(): \App\Http\Responses\PaginatedResponse
+    public function list(): PaginatedResponse
     {
-        return $this->paginate(
-            Staff::query()
-        );
+        return $this->paginate(Staff::query());
     }
 
     #[OA\Get(
@@ -48,17 +63,21 @@ class StaffController
         security: OpenApiSpec::SECURITY,
         tags: ['staff'],
         parameters: [
-            new OA\Parameter(name: 'staffId', description: 'Staff ID', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(
+                name: 'staffId',
+                description: 'Staff ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
         ],
         responses: [
             new OA\Response(
                 response: 200,
                 description: 'Staff member information',
-                content: new OA\JsonContent(
-                    ref: '#/components/schemas/Staff'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/Staff'),
             ),
-        ]
+        ],
     )]
     public function get(Staff $staff): Staff
     {
@@ -67,7 +86,7 @@ class StaffController
 
     public function avatar(Staff $staff): \Illuminate\Http\Response
     {
-        if (! $staff->hasImage()) {
+        if (!$staff->hasImage()) {
             return $this->responseFactory->make(status: 404);
         }
 

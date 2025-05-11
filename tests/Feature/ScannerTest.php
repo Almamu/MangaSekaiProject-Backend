@@ -22,11 +22,14 @@ class ScannerTest extends TestCase
 
     private \VirtualFileSystem\FileSystem $vfs;
 
-    public function __construct(private \Illuminate\Queue\QueueManager $queueManager) {}
+    public function __construct(
+        private \Illuminate\Queue\QueueManager $queueManager,
+    ) {
+    }
 
     private function baseVfs(): \VirtualFileSystem\FileSystem
     {
-        $vfs = new \VirtualFileSystem\FileSystem;
+        $vfs = new \VirtualFileSystem\FileSystem();
 
         // create some directories to simulate media structure
         $vfs->createDirectory('/storage1/Bakuman/Chapter 1', true);
@@ -70,20 +73,17 @@ class ScannerTest extends TestCase
         $this->instance(
             Matcher::class,
             Mockery::mock(Matcher::class, function (MockInterface $mock): void {
-                $mock->shouldReceive('match')
-                    ->with('Bakuman.zip')
-                    ->andReturn([]);
-                $mock->shouldReceive('match')
+                $mock->shouldReceive('match')->with('Bakuman.zip')->andReturn([]);
+                $mock
+                    ->shouldReceive('match')
                     ->with('Bakuman')
-                    ->andReturn([new SeriesMatch(
-                        1000, 'anilist', '', 'http://dummy.test', '', [], 1, '', '', [
+                    ->andReturn([
+                        new SeriesMatch(1000, 'anilist', '', 'http://dummy.test', '', [], 1, '', '', [
                             new AuthorMatch(1, 'role', 'name', 'http://dummy.test', 'description'),
-                        ]
-                    )]);
-                $mock->shouldReceive('match')
-                    ->with('Death Note')
-                    ->andReturn([]);
-            })
+                        ]),
+                    ]);
+                $mock->shouldReceive('match')->with('Death Note')->andReturn([]);
+            }),
         );
     }
 
@@ -192,7 +192,7 @@ class ScannerTest extends TestCase
     public function test_media_zip(): void
     {
         // create a mock zip file and add it to the vfs
-        $zip = new \PhpZip\ZipFile;
+        $zip = new \PhpZip\ZipFile();
         $zip->addFromString('Chapter 3/001.jpg', '');
         $zip->addFromString('Chapter 3/002.5.jpg', '');
         $zip->addFromString('Chapter 3/003.doc', '');
@@ -202,7 +202,7 @@ class ScannerTest extends TestCase
 
         $this->vfs->createFile('/storage1/Bakuman.zip', $zip->outputAsString());
 
-        $zip = new \PhpZip\ZipFile;
+        $zip = new \PhpZip\ZipFile();
         $zip->addFromString('__MACOSX/dummydata', '');
         $zip->addFromString('001.jpg', '');
 

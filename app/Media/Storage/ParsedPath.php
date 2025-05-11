@@ -7,15 +7,16 @@ readonly class ParsedPath
     public function __construct(
         public string $disk,
         public string $container,
-        public string $path
-    ) {}
+        public string $path,
+    ) {
+    }
 
     public function __toString(): string
     {
         $result = '';
 
         if (strlen($this->disk) > 0) {
-            $result = $this->disk.'://';
+            $result = $this->disk . '://';
         }
 
         if ($this->hasContainer()) {

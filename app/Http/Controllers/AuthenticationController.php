@@ -9,15 +9,32 @@ use Illuminate\Http\Response;
 use OpenApi\Attributes as OA;
 
 #[OA\PathItem(path: '/api/v1/auth', summary: 'Authentication')]
-#[OA\Schema(schema: 'TokenResponse', required: ['token', 'token_type', 'expires_in'], properties: [
-    new OA\Property(property: 'token', type: 'string'),
-    new OA\Property(property: 'token_type', type: 'string'),
-    new OA\Property(property: 'expires_in', type: 'integer'),
-])]
+#[OA\Schema(
+    schema: 'TokenResponse',
+    required: ['token', 'token_type', 'expires_in'],
+    properties: [
+        new OA\Property(
+            property: 'token',
+            type: 'string',
+        ),
+        new OA\Property(
+            property: 'token_type',
+            type: 'string',
+        ),
+        new OA\Property(
+            property: 'expires_in',
+            type: 'integer',
+        ),
+    ],
+)]
 #[OA\Tag(name: 'auth', description: 'Authentication')]
 class AuthenticationController
 {
-    public function __construct(private \Illuminate\Contracts\Auth\Guard $guard, private \Illuminate\Contracts\Routing\ResponseFactory $responseFactory) {}
+    public function __construct(
+        private \Illuminate\Contracts\Auth\Guard $guard,
+        private \Illuminate\Contracts\Routing\ResponseFactory $responseFactory,
+    ) {
+    }
 
     #[OA\Post(
         path: '/api/v1/auth/login',
@@ -30,19 +47,25 @@ class AuthenticationController
                 schema: 'LoginRequest',
                 required: ['username', 'password'],
                 properties: [
-                    new OA\Property(property: 'username', type: 'string'),
-                    new OA\Property(property: 'password', type: 'string'),
-                ]
-            )
+                    new OA\Property(
+                        property: 'username',
+                        type: 'string',
+                    ),
+                    new OA\Property(
+                        property: 'password',
+                        type: 'string',
+                    ),
+                ],
+            ),
         ),
         tags: ['auth'],
         responses: [
             new OA\Response(
                 response: 200,
                 description: 'Token information after successful login',
-                content: new OA\JsonContent(ref: '#/components/schemas/TokenResponse')
+                content: new OA\JsonContent(ref: '#/components/schemas/TokenResponse'),
             ),
-        ]
+        ],
     )]
     public function login(LoginRequest $request): JsonResponse
     {
@@ -61,9 +84,9 @@ class AuthenticationController
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Successful logout'
+                description: 'Successful logout',
             ),
-        ]
+        ],
     )]
     public function logout(): Response
     {
@@ -83,9 +106,9 @@ class AuthenticationController
             new OA\Response(
                 response: 200,
                 description: 'Token information after successful refresh',
-                content: new OA\JsonContent(ref: '#/components/schemas/TokenResponse')
+                content: new OA\JsonContent(ref: '#/components/schemas/TokenResponse'),
             ),
-        ]
+        ],
     )]
     public function refresh(): JsonResponse
     {

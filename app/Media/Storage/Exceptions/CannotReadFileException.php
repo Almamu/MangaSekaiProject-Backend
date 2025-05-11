@@ -8,6 +8,6 @@ class CannotReadFileException extends \Exception
 {
     public function __construct(ParsedPath|string $file)
     {
-        parent::__construct('Cannot read file '.$file, 1);
+        parent::__construct('Cannot read file ' . $file, 1);
     }
 }

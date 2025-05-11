@@ -19,9 +19,9 @@ class MediaController
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Job execution was queued successfully.'
+                description: 'Job execution was queued successfully.',
             ),
-        ]
+        ],
     )]
     public function refresh(): void
     {
@@ -44,9 +44,9 @@ class MediaController
                 content: new OA\JsonContent(
                     type: 'array',
                     items: new OA\Items(type: 'string'),
-                )
+                ),
             ),
-        ]
+        ],
     )]
     public function queue(): Collection
     {

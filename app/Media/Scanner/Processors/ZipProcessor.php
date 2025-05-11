@@ -15,7 +15,10 @@ class ZipProcessor implements Processor
      */
     private array $handles = [];
 
-    public function __construct(private readonly ImageHandlerService $imageHandler) {}
+    public function __construct(
+        private readonly ImageHandlerService $imageHandler,
+    ) {
+    }
 
     private function extractZipContainer(string $path): string
     {
@@ -30,7 +33,7 @@ class ZipProcessor implements Processor
 
         // validate that the archive's extension is valid and that it's not pointing to a directory
         // (this prevents using a zip as a library, but that'd be a massive headache right now)
-        if (! $context->filesystem->exists($archive)) {
+        if (!$context->filesystem->exists($archive)) {
             return false;
         }
 
@@ -48,7 +51,8 @@ class ZipProcessor implements Processor
     {
         // zip file found, should be a series only, add it to the list
         SeriesScan::updateOrInsert([
-            'library_id' => $context->uuid, 'basepath' => $path,
+            'library_id' => $context->uuid,
+            'basepath' => $path,
         ]);
 
         return true;
@@ -67,7 +71,7 @@ class ZipProcessor implements Processor
         $chapters = [];
 
         // open the zip file
-        $zip = new \PhpZip\ZipFile;
+        $zip = new \PhpZip\ZipFile();
         $zip->openFromStream($stream);
 
         // get the number of files available on the zip and iterate through them
@@ -89,24 +93,24 @@ class ZipProcessor implements Processor
                 // add chapter to the scan data
                 $chapters[$chapterNumber] = ChaptersScan::updateOrCreate([
                     'series_scan_id' => $serie->id,
-                    'basepath' => $serie->basepath.':'.dirname($entry),
+                    'basepath' => $serie->basepath . ':' . dirname($entry),
                 ]);
             }
 
             $mimeType = $this->imageHandler->guessMimeType($entry);
 
-            if (! $this->imageHandler->isMimeTypeSupported($mimeType)) {
+            if (!$this->imageHandler->isMimeTypeSupported($mimeType)) {
                 continue;
             }
 
             PagesScan::updateOrInsert(
-                ['chapters_scan_id' => $chapters[$chapterNumber]->id, 'path' => $serie->basepath.':'.$entry],
+                ['chapters_scan_id' => $chapters[$chapterNumber]->id, 'path' => $serie->basepath . ':' . $entry],
                 ['mime_type' => $mimeType],
             );
         }
 
         // add zip to the list of parsed files
-        $this->handles[] = $context->uuid.'://'.$archive;
+        $this->handles[] = $context->uuid . '://' . $archive;
 
         $zip->close();
 
@@ -118,7 +122,7 @@ class ZipProcessor implements Processor
         $archive = $this->extractZipContainer($chapter->basepath);
 
         // this zip was already parsed before, so it can be ignored
-        if (in_array($context->uuid.'://'.$archive, $this->handles)) {
+        if (in_array($context->uuid . '://' . $archive, $this->handles)) {
             return true;
         }
 
@@ -129,7 +133,7 @@ class ZipProcessor implements Processor
         }
 
         // open the zip file
-        $zip = new \PhpZip\ZipFile;
+        $zip = new \PhpZip\ZipFile();
         $zip->openFromStream($stream);
 
         foreach ($zip->getListFiles() as $entry) {
@@ -148,18 +152,18 @@ class ZipProcessor implements Processor
 
             $mimeType = $this->imageHandler->guessMimeType($entry);
 
-            if (! $this->imageHandler->isMimeTypeSupported($mimeType)) {
+            if (!$this->imageHandler->isMimeTypeSupported($mimeType)) {
                 continue;
             }
 
             PagesScan::updateOrInsert(
-                ['chapters_scan_id' => $chapter->id, 'path' => $chapter->basepath.':'.$entry],
+                ['chapters_scan_id' => $chapter->id, 'path' => $chapter->basepath . ':' . $entry],
                 ['mime_type' => $mimeType],
             );
         }
 
         // add zip to the list of parsed files
-        $this->handles[] = $context->uuid.'://'.$archive;
+        $this->handles[] = $context->uuid . '://' . $archive;
 
         $zip->close();
 
@@ -171,6 +175,6 @@ class ZipProcessor implements Processor
         $archive = $this->extractZipContainer($page->path);
 
         // this zip was already parsed before, so it can be ignored
-        return in_array($context->uuid.'://'.$archive, $this->handles);
+        return in_array($context->uuid . '://' . $archive, $this->handles);
     }
 }

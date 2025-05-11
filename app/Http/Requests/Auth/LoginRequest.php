@@ -12,7 +12,11 @@ use Illuminate\Validation\ValidationException;
  */
 class LoginRequest extends \Illuminate\Foundation\Http\FormRequest
 {
-    public function __construct(private \Illuminate\Contracts\Auth\Guard $guard, private \Illuminate\Events\Dispatcher $dispatcher) {}
+    public function __construct(
+        private \Illuminate\Contracts\Auth\Guard $guard,
+        private \Illuminate\Events\Dispatcher $dispatcher,
+    ) {
+    }
 
     /**
      * Determine if the user is authorized to make this request.
@@ -50,7 +54,7 @@ class LoginRequest extends \Illuminate\Foundation\Http\FormRequest
 
         $token = $this->guard->attempt($this->only('username', 'password'));
 
-        if (! is_string($token)) {
+        if (!is_string($token)) {
             RateLimiter::hit($this->throttleKey());
 
             $this->throwValidationError('INVALID_CREDENTIALS');
@@ -68,7 +72,7 @@ class LoginRequest extends \Illuminate\Foundation\Http\FormRequest
      */
     private function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 

@@ -23,14 +23,14 @@ class StorageTest extends TestCase
 
     private function baseVfs(): \VirtualFileSystem\FileSystem
     {
-        $vfs = new \VirtualFileSystem\FileSystem;
+        $vfs = new \VirtualFileSystem\FileSystem();
         $vfs->createDirectory('/storage1/testfolder', true);
         $vfs->createDirectory('/storage2');
         $vfs->createFile('/storage1/testfolder/test.txt', 'test folder for normal handling');
         $vfs->createFile('/storage2/test2.txt', '');
 
         // create some files for the tests
-        $zip = new \PhpZip\ZipFile;
+        $zip = new \PhpZip\ZipFile();
         $zip->addFromString('test.txt', 'testing text');
 
         $vfs->createFile('/storage1/test.zip', $zip->outputAsString());
@@ -63,8 +63,8 @@ class StorageTest extends TestCase
      */
     public function test_storage_drivers(): void
     {
-        $firstfile = $this->firstuuid.'://testfolder/test.txt';
-        $secondfile = $this->seconduuid.'://test2.txt';
+        $firstfile = $this->firstuuid . '://testfolder/test.txt';
+        $secondfile = $this->seconduuid . '://test2.txt';
 
         $this->assertNotNull($this->storage->storage($firstfile));
         $this->assertNotNull($this->storage->storage($secondfile));
@@ -121,13 +121,13 @@ class StorageTest extends TestCase
 
     public function test_handlers(): void
     {
-        $this->storage->open($this->firstuuid.'://testfolder/test.txt', function ($stream): void {
+        $this->storage->open($this->firstuuid . '://testfolder/test.txt', function ($stream): void {
             $this->assertIsResource($stream);
 
             $this->assertEquals('test folder for normal handling', stream_get_contents($stream));
         });
 
-        $this->storage->open($this->firstuuid.'://test.zip:test.txt', function ($stream): void {
+        $this->storage->open($this->firstuuid . '://test.zip:test.txt', function ($stream): void {
             $this->assertIsResource($stream);
 
             $this->assertEquals('testing text', stream_get_contents($stream));

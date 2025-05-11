@@ -17,9 +17,10 @@ class ImageHandlerService
     /**
      * @param  string[]  $mimeTypes
      */
-    public function __construct(private readonly array $mimeTypes = [])
-    {
-        $this->mimeTypeGuesser = new MimeTypes;
+    public function __construct(
+        private readonly array $mimeTypes = [],
+    ) {
+        $this->mimeTypeGuesser = new MimeTypes();
     }
 
     public function isMimeTypeSupported(string $mimeType): bool
@@ -35,7 +36,7 @@ class ImageHandlerService
         $filename = basename($filename);
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
 
-        if (! is_string($extension) || trim($extension) === '') {
+        if (trim($extension) === '') {
             return 'application/octet-stream';
         }
 

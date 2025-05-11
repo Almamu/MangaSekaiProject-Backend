@@ -20,5 +20,9 @@ class CommonSeeder extends Seeder
             'key' => 'scanner_dirs',
             'value' => [],
         ]);
+        Settings::create([
+            'key' => 'complete_threshold',
+            'value' => 30,
+        ]);
     }
 }

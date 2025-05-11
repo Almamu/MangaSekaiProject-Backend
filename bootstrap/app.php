@@ -7,8 +7,8 @@ use Illuminate\Foundation\Configuration\Middleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',
+        web: __DIR__ . '/../routes/web.php',
+        api: __DIR__ . '/../routes/api.php',
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // the web routes we have aren't really relevant and can be stripped of any middleware we don't want
@@ -22,10 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         // prevents redirection to login
         $middleware->redirectTo(
-            fn () => ErrorResponse::throwException('UNAUTHENTICATED', 401),
-            fn () => ErrorResponse::throwException('AUTHENTICATED', 401)
+            fn() => ErrorResponse::throwException('UNAUTHENTICATED', 401),
+            fn() => ErrorResponse::throwException('AUTHENTICATED', 401),
         );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->shouldRenderJsonWhen(fn (\Illuminate\Http\Request $request) => $request->is('api/*'));
-    })->create();
+        $exceptions->shouldRenderJsonWhen(fn(\Illuminate\Http\Request $request) => $request->is('api/*'));
+    })
+    ->create();

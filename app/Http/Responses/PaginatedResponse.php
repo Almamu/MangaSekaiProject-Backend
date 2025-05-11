@@ -9,13 +9,13 @@ use Illuminate\Http\JsonResponse;
  * Simple class that handles paginated objects and turns them into JsonResponses
  *
  * This one lacks OpenApi specification because it's a 'generic' of sorts
+ *
+ * @template TItem
  */
 class PaginatedResponse extends JsonResponse
 {
     /**
-     * @template TItem
-     *
-     * @param  LengthAwarePaginator<TItem>  $paginator
+     * @param LengthAwarePaginator<int, TItem>  $paginator
      */
     public function __construct(LengthAwarePaginator $paginator)
     {

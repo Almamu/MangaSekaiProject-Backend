@@ -13,7 +13,10 @@ class JobQueueTest extends TestCase
 
     protected bool $seed = true;
 
-    public function __construct(private \Illuminate\Queue\QueueManager $queueManager) {}
+    public function __construct(
+        private \Illuminate\Queue\QueueManager $queueManager,
+    ) {
+    }
 
     public function test_job_queue(): void
     {
@@ -28,13 +31,16 @@ class JobQueueTest extends TestCase
 
         $token = $response
             ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll(['token', 'token_type', 'expires_in']))
+            ->assertJson(fn(AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->hasAll([
+                'token',
+                'token_type',
+                'expires_in',
+            ]))
             ->json('token');
 
-        $response = $this->post('/api/v1/admin/media/refresh', ['Authorization' => 'Bearer '.$token]);
+        $response = $this->post('/api/v1/admin/media/refresh', ['Authorization' => 'Bearer ' . $token]);
 
-        $response
-            ->assertStatus(200);
+        $response->assertStatus(200);
 
         $this->queueManager->assertPushed(ScanMedia::class);
     }

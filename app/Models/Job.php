@@ -22,6 +22,10 @@ class Job extends Model
      */
     public function getName(): string
     {
-        return $this->payload->displayName ?? 'Unknown';
+        if (isset($this->payload->displayName) && is_string($this->payload->displayName)) {
+            return $this->payload->displayName;
+        }
+
+        return 'Unknown';
     }
 }

@@ -20,9 +20,10 @@ class Matcher
     public function __construct(
         private readonly array $sources,
         Application $app,
-        private \Illuminate\Log\LogManager $logManager
+        private readonly \Illuminate\Log\LogManager $logManager,
     ) {
-        $this->instances = array_map(fn ($x) => $app->make($x), $this->sources);
+        // @phpstan-ignore assign.propertyType (For some reason PHPStan doesn't properly detect types even tho they match)
+        $this->instances = array_map(fn($x) => $app->make($x), $this->sources);
     }
 
     /**
@@ -43,7 +44,7 @@ class Matcher
             return $result;
         }
 
-        $this->logManager->info('No results found for "'.$search.'"');
+        $this->logManager->info('No results found for "' . $search . '"');
 
         return [];
     }
