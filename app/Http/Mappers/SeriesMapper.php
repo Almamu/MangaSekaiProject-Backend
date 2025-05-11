@@ -63,6 +63,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(
             property: 'blocked_fields',
             type: 'array',
+            items: new OA\Items(type: 'string'),
         ),
         new OA\Property(
             property: 'genres',
