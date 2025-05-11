@@ -6,6 +6,7 @@ use App\Http\OpenApi\PaginationSchema;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Routing\UrlGenerator;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -156,6 +157,18 @@ class Serie extends Model
         'blocked_fields',
     ];
 
+    /**
+     * Create a new Eloquent model instance.
+     *
+     * @param array<mixed, mixed> $attributes
+     */
+    public function __construct(
+        array $attributes,
+        private readonly \Illuminate\Routing\UrlGenerator $urlGenerator,
+    ) {
+        parent::__construct($attributes);
+    }
+
     protected function casts(): array
     {
         return [
@@ -163,13 +176,16 @@ class Serie extends Model
         ];
     }
 
-    public function getImageUrlAttribute(): null|string
+    // @phpstan-ignore missingType.generics (This doesn't really have generics but something we have is triggering it)
+    protected function imageUrl(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        if (!$this->hasImage()) {
-            return null;
-        }
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            if (!$this->hasImage()) {
+                return null;
+            }
 
-        return route('images.series.cover', ['serie' => $this->id]);
+            return $this->urlGenerator->route('images.series.cover', ['serie' => $this->id]);
+        });
     }
 
     /**

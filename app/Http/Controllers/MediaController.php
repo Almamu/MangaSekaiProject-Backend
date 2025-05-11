@@ -10,6 +10,11 @@ use OpenApi\Attributes as OA;
 
 class MediaController
 {
+    public function __construct(
+        private readonly \Illuminate\Contracts\Config\Repository $repository,
+    ) {
+    }
+
     #[OA\Post(
         path: '/api/v1/admin/media/refresh',
         operationId: 'queueRefreshMedia',
@@ -25,7 +30,7 @@ class MediaController
     )]
     public function refresh(): void
     {
-        ScanMedia::dispatch();
+        ScanMedia::dispatch($this->repository);
     }
 
     /**

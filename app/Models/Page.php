@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Routing\UrlGenerator;
 
 /**
  * @mixin IdeHelperPage
@@ -19,8 +20,23 @@ class Page extends Model
 
     public $timestamps = false;
 
-    public function getPublicUrlAttribute(): null|string
+    /**
+     * Create a new Eloquent model instance.
+     *
+     * @param array<mixed, mixed> $attributes
+     */
+    public function __construct(
+        array $attributes,
+        private readonly \Illuminate\Routing\UrlGenerator $urlGenerator,
+    ) {
+        parent::__construct($attributes);
+    }
+
+    // @phpstan-ignore missingType.generics (This doesn't really have generics but something we have is triggering it)
+    protected function publicUrl(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        return route('images.pages', ['page' => $this->id]);
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            return $this->urlGenerator->route('images.pages', ['page' => $this->id]);
+        });
     }
 }

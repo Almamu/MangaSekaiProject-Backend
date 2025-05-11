@@ -22,10 +22,7 @@ class ScannerTest extends TestCase
 
     private \VirtualFileSystem\FileSystem $vfs;
 
-    public function __construct(
-        private \Illuminate\Queue\QueueManager $queueManager,
-    ) {
-    }
+    private \Illuminate\Queue\QueueManager $queueManager;
 
     private function baseVfs(): \VirtualFileSystem\FileSystem
     {
@@ -50,6 +47,7 @@ class ScannerTest extends TestCase
     {
         parent::setup();
 
+        $this->queueManager = $this->app->make(\Illuminate\Queue\QueueManager::class);
         $this->queueManager->fake([
             DownloadResources::class,
         ]);

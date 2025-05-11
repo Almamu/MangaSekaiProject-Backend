@@ -42,10 +42,14 @@ class MatcherTest extends TestCase
      */
     public function test_matcher(): void
     {
-        $matcher = new Matcher([
-            DummySource::class,
-            DummySource2::class,
-        ], $this->app);
+        $matcher = new Matcher(
+            [
+                DummySource::class,
+                DummySource2::class,
+            ],
+            $this->app,
+            $this->app->make(\Illuminate\Log\LogManager::class),
+        );
 
         $result = $matcher->match('missing');
         $this->assertCount(0, $result);

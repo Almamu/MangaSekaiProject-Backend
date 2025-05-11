@@ -107,8 +107,8 @@ query (
             }
 
             $result = $response->json();
-        } catch (\Exception $e) {
-            \Log::error('Error occurred during HTTP request.', ['exception' => $e->getMessage()]);
+        } catch (\Exception $exception) {
+            \Log::error('Error occurred during HTTP request.', ['exception' => $exception->getMessage()]);
             return [];
         }
 
@@ -124,27 +124,26 @@ query (
 
         try {
             return [$this->buildSeries($result['data']['MANGA'])];
-        } catch (\Exception $e) {
-            \Log::error('Error occurred during series data parsing.', ['exception' => $e->getMessage()]);
+        } catch (\Exception $exception) {
+            \Log::error('Error occurred during series data parsing.', ['exception' => $exception->getMessage()]);
             return [];
         }
     }
 
     /**
-     * @throws \Exception
+     * @throws \Throwable
      */
     private function buildSeries(mixed $series): SeriesMatch
     {
-        if (
+        throw_if(
             !is_array($series) ||
                 !is_int($series['id']) ||
                 !is_array($series['startDate']) ||
                 !is_array($series['title']) ||
                 !is_int($series['averageScore']) ||
-                !is_string($series['title']['userPreferred'])
-        ) {
-            throw new \Exception('Invalid series data.');
-        }
+                !is_string($series['title']['userPreferred']),
+            new \Exception('Invalid series data.'),
+        );
 
         $authors = [];
         $genres = [];
@@ -201,7 +200,7 @@ query (
 
         foreach ($staffEdges as $staff) {
             $author = $this->parseAuthor($staff);
-            if ($author !== null) {
+            if ($author instanceof \App\Media\Matcher\Data\AuthorMatch) {
                 $authors[] = $author;
             }
         }
@@ -242,7 +241,7 @@ query (
     private function formatDate(mixed $date): string
     {
         if (is_array($date) && is_int($date['year']) && is_int($date['month']) && is_int($date['day'])) {
-            return "{$date['year']}/{$date['month']}/{$date['day']}";
+            return sprintf('%d/%d/%d', $date['year'], $date['month'], $date['day']);
         }
 
         return '';

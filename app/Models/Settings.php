@@ -44,9 +44,7 @@ class Settings extends Model
     {
         $uuid = uuid_create();
 
-        if (!is_string($uuid)) {
-            throw new \Exception('Failed to generate UUID');
-        }
+        throw_unless(is_string($uuid), new \Exception('Failed to generate UUID'));
 
         $setting = static::getScannerDirs();
         $setting->value = array_merge($setting->value, [['uuid' => $uuid, 'config' => $config]]);

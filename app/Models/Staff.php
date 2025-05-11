@@ -6,6 +6,7 @@ use App\Http\OpenApi\PaginationSchema;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Routing\UrlGenerator;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -93,13 +94,28 @@ class Staff extends Model
 
     protected $appends = ['image_url'];
 
-    public function getImageUrlAttribute(): null|string
-    {
-        if (!$this->hasImage()) {
-            return null;
-        }
+    /**
+     * Create a new Eloquent model instance.
+     *
+     * @param array<mixed,mixed> $attributes
+     */
+    public function __construct(
+        array $attributes,
+        private readonly \Illuminate\Routing\UrlGenerator $urlGenerator,
+    ) {
+        parent::__construct($attributes);
+    }
 
-        return route('images.staff.avatar', ['staff' => $this->id]);
+    // @phpstan-ignore missingType.generics (This doesn't really have generics but something we have is triggering it)
+    protected function imageUrl(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(get: function () {
+            if (!$this->hasImage()) {
+                return null;
+            }
+
+            return $this->urlGenerator->route('images.staff.avatar', ['staff' => $this->id]);
+        });
     }
 
     /**

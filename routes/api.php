@@ -13,13 +13,13 @@ Route::group(
         Route::middleware(['auth'])
             ->prefix('auth')
             ->group(function (): void {
-                Route::post('logout', [AuthenticationController::class, 'logout'])->name('auth.logout');
+                Route::post('logout', [AuthenticationController::class, 'logout'])->name(\Illuminate\Auth\Events\Logout::class);
                 Route::post('refresh', [AuthenticationController::class, 'refresh'])
                     ->withoutMiddleware('auth')
                     ->name('auth.refresh');
                 Route::post('login', [AuthenticationController::class, 'login'])
                     ->withoutMiddleware('auth')
-                    ->name('auth.login');
+                    ->name(\Illuminate\Auth\Events\Login::class);
             });
 
         Route::middleware(['auth'])

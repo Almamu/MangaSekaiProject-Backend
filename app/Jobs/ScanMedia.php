@@ -20,6 +20,10 @@ use Illuminate\Queue\Middleware\WithoutOverlapping;
 class ScanMedia implements ShouldQueue
 {
     use Queueable;
+    public function __construct(
+        private readonly \Illuminate\Contracts\Config\Repository $repository,
+    ) {
+    }
 
     /**
      * Execute the job.
@@ -210,7 +214,7 @@ class ScanMedia implements ShouldQueue
         // tests use this job to run the full import job
         // but throttling the exceptions prevents them for being reported while running as dispatchSync
         // so act a bit special on testing environments and do not include that middleware
-        if (config('app.env') === 'testing') {
+        if ($this->repository->get('app.env') === 'testing') {
             return [
                 new WithoutOverlapping('scan-media'),
             ];

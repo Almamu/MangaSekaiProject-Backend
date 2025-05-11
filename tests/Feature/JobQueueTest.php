@@ -13,14 +13,10 @@ class JobQueueTest extends TestCase
 
     protected bool $seed = true;
 
-    public function __construct(
-        private \Illuminate\Queue\QueueManager $queueManager,
-    ) {
-    }
-
     public function test_job_queue(): void
     {
-        $this->queueManager->fake([
+        $queueManager = $this->app->make(\Illuminate\Queue\QueueManager::class);
+        $queueManager->fake([
             ScanMedia::class,
         ]);
 
@@ -42,6 +38,6 @@ class JobQueueTest extends TestCase
 
         $response->assertStatus(200);
 
-        $this->queueManager->assertPushed(ScanMedia::class);
+        $queueManager->assertPushed(ScanMedia::class);
     }
 }
