@@ -4,7 +4,7 @@ jobs:
   phpunit:
     runs-on: ubuntu-latest
     container:
-      image: kirschbaumdevelopment/laravel-test-runner:8.3
+      image: kirschbaumdevelopment/laravel-test-runner:8.4
 
     steps:
     - uses: actions/checkout@v1
@@ -15,7 +15,7 @@ jobs:
       run: |
         git config --system --add safe.directory '*'
         touch database/database.sqlite
-        apt update && apt install -y make php8.3-xdebug
+        apt update && apt install -y make php8.4-xdebug
         cp .env.ci .env
         composer install
         make dev_db_fresh
